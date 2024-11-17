@@ -31,7 +31,7 @@ while True:
     frame_rate=16000,   
     channels=1         
     )
-    str_audio = audio_segment + 10
+    str_audio = audio_segment + 10 # підвищення гучності на 10 дец
 
     
     audio_np = np.array(str_audio.get_array_of_samples(), dtype=np.int16) # gеретворення numpy масив
