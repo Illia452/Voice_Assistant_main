@@ -2,6 +2,8 @@ from vosk import Model, KaldiRecognizer
 import pyaudio
 import numpy as np
 import noisereduce as nr
+import librosa
+from pydub import AudioSegment
 
 model = Model(r'C:\vosk-model-small-uk-v3-small') 
 recognizer = KaldiRecognizer(model, 16000) # розпізнавач
@@ -19,16 +21,30 @@ while True:
 
     masiv = np.frombuffer(data, dtype=np.int16) # перетворення байтів в масив
 
-    processed_audio_noise = nr.reduce_noise(y=masiv, sr=16000) # зняття шуму з аудіо
+    audio_without_noise = nr.reduce_noise(y=masiv, sr=16000) # зняття шуму з аудіо
+
+    bytes_audio = audio_without_noise.astype(np.int16).tobytes() # конвертація назад в байти
+
+    audio_segment = AudioSegment(
+    data=bytes_audio,
+    sample_width=2,    # 16 бітний формат (= 2 байти)
+    frame_rate=16000,   
+    channels=1         
+    )
+    str_audio = audio_segment + 10
 
     
+    audio_np = np.array(str_audio.get_array_of_samples(), dtype=np.int16) # gеретворення numpy масив
+    final_audio = audio_np.tobytes() # перетворення у байти
+
+
     #if len(data) == 0:  # якщо не надходить звук цикл припиняється
     #    break
 
-    if recognizer.AcceptWaveform(data): 
+    if recognizer.AcceptWaveform(final_audio): 
         print(recognizer.Result())
-#    else:
-#        print(recognizer.PartialResult()) # постійне прослуховування аудіо з реальним виведенням
+    else:
+        print(recognizer.PartialResult()) # постійне прослуховування аудіо з реальним виведенням
 
         
         
