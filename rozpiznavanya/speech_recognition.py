@@ -2,10 +2,10 @@ from vosk import Model, KaldiRecognizer
 import pyaudio
 import numpy as np
 import noisereduce as nr
-import librosa
 from pydub import AudioSegment
+from commands import * 
 
-model = Model(r'C:\vosk-model-small-uk-v3-small') 
+model = Model(r'C:\vosk_models_uk\vosk-model-uk-v3') 
 recognizer = KaldiRecognizer(model, 16000) # розпізнавач
 
 # paInt16 - 16-бітний формат зберігання, frames_per_buffer=2048 - кількість фреймів що зчитуються за один раз
@@ -34,7 +34,7 @@ while True:
     str_audio = audio_segment + 10 # підвищення гучності на 10 дец
 
     
-    audio_np = np.array(str_audio.get_array_of_samples(), dtype=np.int16) # gеретворення numpy масив
+    audio_np = np.array(str_audio.get_array_of_samples(), dtype=np.int16) # перетворення numpy масив
     final_audio = audio_np.tobytes() # перетворення у байти
 
 
@@ -42,9 +42,16 @@ while True:
     #    break
 
     if recognizer.AcceptWaveform(final_audio): 
+        rec = recognizer.Result()
         print(recognizer.Result())
+        if("скріншот" in rec):
+            TakeScreenShot()                        
     else:
+        rec = recognizer.PartialResult()
         print(recognizer.PartialResult()) # постійне прослуховування аудіо з реальним виведенням
+        if("скріншот" in rec):
+            TakeScreenShot()
+        
 
         
         
