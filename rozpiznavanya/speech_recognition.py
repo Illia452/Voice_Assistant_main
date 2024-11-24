@@ -4,6 +4,8 @@ import numpy as np
 import noisereduce as nr
 from pydub import AudioSegment
 from commands import * 
+import json
+
 
 model = Model(r'C:\vosk_models_uk\vosk-model-uk-v3') 
 recognizer = KaldiRecognizer(model, 16000) # розпізнавач
@@ -43,15 +45,27 @@ while True:
 
     if recognizer.AcceptWaveform(final_audio): 
         rec = recognizer.Result()
-        print(recognizer.Result())
-        if("скріншот" in rec):
-            TakeScreenShot()                        
+        result = json.loads(rec)
+
+        if len(result["text"]) == 0:
+            continue
+        else:
+            print(result["text"])
+
+            if("скріншот" in rec):
+                TakeScreenShot()                        
     else:
         rec = recognizer.PartialResult()
-        print(recognizer.PartialResult()) # постійне прослуховування аудіо з реальним виведенням
-        if("скріншот" in rec):
-            TakeScreenShot()
+        result = json.loads(rec)
+        if len(result["partial"]) == 0:
+            continue
+        else:
+            print(result["partial"])
         
-
+         # постійне прослуховування аудіо з реальним виведенням
+            if("скріншот" in rec):
+                TakeScreenShot()
+        
+    
         
         
