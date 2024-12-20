@@ -1,7 +1,7 @@
 from PIL import ImageGrab
 from pathlib import Path
 
-class Commands():
+class VoiceCommands():
     def TakeScreenShot(self):
         path = Path("Screenshots") # шлях до папки
         path.mkdir(parents=True, exist_ok=True) # exist_ok=true - якщо папка screenshots існує то знехтувати помилкою
@@ -19,7 +19,7 @@ class Commands():
         screen.save(file_screen)
 
 
-commands = Commands()
-commands.TakeScreenShot()
+commands = VoiceCommands()
+
 
     

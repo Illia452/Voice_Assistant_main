@@ -3,7 +3,7 @@ import pyaudio
 import numpy as np
 import noisereduce as nr
 from pydub import AudioSegment
-from commands import * 
+from commands import VoiceCommands
 import json
 
 
@@ -17,6 +17,8 @@ class SpeechRecognition():
 
         self.stream = cap.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=2048)
         self.stream.start_stream()
+
+        self.voice_commands = VoiceCommands()
         
         
 
@@ -30,7 +32,7 @@ class SpeechRecognition():
 
         self.bytes_audio = audio_without_noise.astype(np.int16).tobytes() # конвертація назад в байти
         
-
+        
 
     def volume_up(self):
         audio_segment = AudioSegment(
@@ -64,8 +66,8 @@ class SpeechRecognition():
                 else:
                     print(result["text"])
 
-                    if("скріншот" in rec):
-                        Commands.TakeScreenShot()                        
+                    if("скріншот" in result["text"]):
+                        self.voice_commands.TakeScreenShot()                        
             else:
                 rec = self.recognizer.PartialResult()
                 result = json.loads(rec)
@@ -76,8 +78,8 @@ class SpeechRecognition():
                     
         
                     # постійне прослуховування аудіо з реальним виведенням
-                    if("скріншот" in rec):
-                        Commands.TakeScreenShot()
+                    if("скріншот" in result["partial"]):
+                        self.voice_commands.TakeScreenShot()
 
 
 
