@@ -46,17 +46,18 @@ import sqlite3
 
 
 # print(len(scrin))
-
+output_data=[]
 with open('synonyms.json', 'r', encoding='utf-8') as f:
     output_data = json.load(f)
     # print(output_data)
 
 a = "знімок монітор"
-print(output_data)
-print(output_data.values())
-# for key, values in output_data.values():
-# if a in output_data.values():
-#     print("good")
+# print(output_data)
+
+def command_chck():
+    for key, value in output_data.items():
+        if a in value:
+            print("good")
     
 
 

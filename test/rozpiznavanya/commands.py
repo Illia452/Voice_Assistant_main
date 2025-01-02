@@ -1,6 +1,5 @@
 from PIL import ImageGrab
 from pathlib import Path
-import webbrowser
 
 class VoiceCommands():
     def TakeScreenShot(self):
@@ -18,10 +17,6 @@ class VoiceCommands():
                 break
             
         screen.save(file_screen)
-
-    def OpenBrowser(self):
-        webbrowser.open('https://www.google.com/')
-
 
 
 commands = VoiceCommands()
