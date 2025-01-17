@@ -8,7 +8,7 @@ import json
 import time
 from pydub.utils import db_to_float
 import itertools
-from find_silence import detect_silence
+
 
 
 
@@ -35,7 +35,7 @@ class SpeechRecognition():
 
         self.detect_command = False
 
-        self.key_word =["зефір", "захід", "з ефір", "ефір", "земфіра", "засіяти", "захир", "захір", "за часів", "часів", "за шию", "зефірс"]
+        self.key_word =["зефір", "захід", "з ефір", "ефір", "земфіра", "засіяти", "захир", "захір", "за часів", "часів", "за шию", "зефірс", "захер"]
 
         self.time_make_command = 0.0
         self.list_command = ""
