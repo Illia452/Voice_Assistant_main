@@ -1,9 +1,7 @@
-import time
+text1 = ""
 
+text2 = "падав сніг на поріг"
 
+text3 = "кіт ліпив собі пиріг"
 
-start_time = time.time()
-while True:
-    if time.time() >= start_time + 4.8:
-        print("good")
-        break
+print(text1 + text2 + text3)

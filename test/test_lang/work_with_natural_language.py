@@ -51,7 +51,7 @@ with open('synonyms.json', 'r', encoding='utf-8') as f:
     output_data = json.load(f)
     # print(output_data)
 
-a = "знімок монітор"
+a = "скрін"
 # print(output_data)
 
 def command_chck():
@@ -95,8 +95,8 @@ def command_chck():
 # # mytable = str.maketrans(",", "-")
 # # print(txt.translate(mytable))
 
-# from rapidfuzz import fuzz
-# print(fuzz.ratio("кіт їх", "кіт їх торт"))
+from rapidfuzz import fuzz
+print(fuzz.ratio("кіт їх", "кіт їх торт"))
 
 # кіт
 # кіт їх

@@ -1,6 +1,7 @@
 from PIL import ImageGrab
 from pathlib import Path
 import webbrowser
+import sys, os, subprocess, inspect
 
 class VoiceCommands():
     def TakeScreenShot(self):
@@ -21,6 +22,23 @@ class VoiceCommands():
 
     def OpenBrowser(self):
         webbrowser.open('https://www.google.com/')
+
+    # def SelectFile(self):
+    #     #subprocess.Popen(r'explorer /select,%s' % os.path.abspath(inspect.getfile(inspect.currentframe())))
+
+    #     ## or...
+
+    #     pFileName = os.path.abspath(inspect.getfile(inspect.currentframe()))
+    #     pFileDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    #     print ( 'pFileName = %s\n' % pFileName)
+    #     print ('pFileDir = %s' % pFileDir)
+    #     subprocess.Popen(r'explorer /select,%s' % pFileName)
+    #     if (pFileName.endswith(".png") or pFileName.endswith(".py") or pFileName.endswith(".txt")):
+    #         # subprocess.call([r'C:\Program Files\Notepad++\notepad++.exe',  pFileName])
+    #         subprocess.Popen([r'C:\Program Files\Notepad++\notepad++.exe',  pFileName])
+            
+
+    
 
 
 
