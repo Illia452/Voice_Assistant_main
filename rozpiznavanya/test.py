@@ -2,7 +2,7 @@ from rapidfuzz import fuzz
 import stanza
 import time
 
-stanza.download('uk')
+# stanza.download('uk')
 
 nlp = stanza.Pipeline('uk', processors='tokenize,mwt,pos,lemma', download_method=None)
 
