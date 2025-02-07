@@ -93,81 +93,66 @@ class Work_NL():
         print(f"НАША КОМАНДА{self.list_sentence}")
             
     
+
+
+
+
+
+
+
     def processing_list(self, list_sentenceForWork):    # обробка списку 
-        numberOFsentence = len(list_sentenceForWork) # кількість речень
-        main_sentence = list_sentenceForWork[0] 
-
-        for sentence in list_sentenceForWork:
-            for word, main_word in sentence, main_sentence:
-                similarity = (fuzz.ratio())
 
 
+        # stanza.download('uk') # Завантажуємо модель при умові якщо цього не зроблено(перший запуск програми з інтернетом)
+
+        nlp = stanza.Pipeline('uk', processors='tokenize,mwt,pos,lemma', download_method=None)
+        # download_method - забороняє автоматичне завантаження ресурсів під час виконання pipeline, тобто вмикається офлайн-режим
+        # mwt - Multi-Word Token Expansion - обробляє багатослівні токени — слова, які складаються з кількох частин
+        # pos - Part-of-Speech Tagging - цей процесор визначає частини мови для кожного слова.
 
 
+        main_list_sentence = []
+        other_main_sentence = []
+        main_sentence = list_sentenceForWork[0]
+        num = -2
+        final_MAIN_text = []
+        possible_worlds = []
 
-        
-        # while True:
-        #     if len(self.text_command) != 0:
-        #         break
-        #     elif time.time() >= start_time + 4.8:
-        #         return
-        #     else:
-        #         continue
-
-        while True:
-            text = self.result.get("text", "")
-            partial = self.result.get("partial", "")
-
-            if not text and not partial:
-                continue
-            if "зефір" in text or "зефір" in partial:
-                continue
-            
-            self.text_vosk_text = text
-            self.text_vosk_partial = partial 
-            print("Вхід в цикл")
-
-            if len(self.text_vosk_partial) != 0:
-                self.text_vosk = self.text_vosk_partial
-                
-            else:
-                self.text_vosk = self.text_vosk_text
-
-            doc1 = self.nlp(self.text_vosk)
-            self.text_vosk = []
-            self.text_vosk_partial = []
-            self.text_vosk_text = []
-
-            tokens1 = [word.text for sentence in doc1.sentences for word in sentence.words]
-
-            for i in range(len(tokens1)):
-                if i < len(self.text_command):
-                    similarity = (fuzz.ratio(self.text_command[i], tokens1[i])) 
+        for sentence_num in range(len(list_sentenceForWork)):
+            for i in range(len(list_sentenceForWork[sentence_num])):
+                if i < len(main_sentence):
+                    similarity = (fuzz.ratio(main_sentence[i], list_sentenceForWork[sentence_num][i])) 
                     if similarity >= 80: # при умові якщо слова в речені з однаковими індексами мають схожість більше 80% то залишаємо все як є
                         continue   
-                    elif similarity <= 79: # якщо ж слово має менше 80% cхожості то замінюємо його з потоку vosk
-                        self.text_command[i] = tokens1[i]
-                    elif similarity <=60:
-                        self.text_command.insert(i+1, tokens1[i]) # якщо ж слово має схожість менше 60%, додаємо це слово поряд
-                else:                                               # є шанс що це нова команда
-                    for number, item in enumerate(tokens1): # якщо ж кількість слів між потоком vosk та нашим текстом відрізняється...
-                        self.text_command.extend(tokens1[len(self.text_command):]) # ...то додаємо кількість слів яка залишилась
-            if self.detect == True:
-                return
-            print(f"Кількість слів: {self.text_command}")
-            if len(self.text_command) != 0:
-                print(f"Result: {self.text_command}")
-                while True:
+                    elif 70 < similarity < 80: # якщо ж слово має менше 80% cхожості то замінюємо його з потоку vosk
+                        main_sentence[i] = list_sentenceForWork[sentence_num][i]
+                    elif similarity <= 70:
+                        
+                        if num == i - 1:
+                            possible_worlds.append(list_sentenceForWork[sentence_num][i])
+                            main_list_sentence.append(main_sentence)
+                            main_sentence = possible_worlds.copy()
+                            other_main_sentence = []
+                        else:
+                            possible_worlds.append(list_sentenceForWork[sentence_num][i])
 
-                    self.list_silence.append(self.str_audio) # додавання фрагментів після підвищення гучності
-                    full_audio = sum(self.list_silence) # об'єднання цих фрагментів 
-                    self.silence = detect_silence(full_audio, min_silence_len=500, silence_thresh=-50, seek_step=100) # налаштування для функції тиші
+                            num = i
+                else:
+                    for number, item in enumerate(list_sentenceForWork[sentence_num]): # якщо ж кількість слів між потоком vosk та нашим текстом...
+                        main_sentence.extend(list_sentenceForWork[sentence_num][len(main_sentence):]) # ...відрізняється то додаємо залишившусь кількість слів
+        main_list_sentence.append(main_sentence)      
 
-                    for silence in self.silence:
-                        if (silence[1] - silence[0]) >= 1800:
-                            print(f"НАША КОМАНДА: {self.text_command}")
-                            self.detect = True
-                            break
-                            
-                    print(f"НАША КОМАНДА: {self.text_command}")
-                    return  
+
+        for text in main_list_sentence:
+            main_text = ' '.join(text)
+            doc = nlp(main_text)
+            lemmas = [word.lemma for sentence in doc.sentences for word in sentence.words]
+            final_MAIN_text.append(lemmas)
+        # 1. додати перевірку other_main_sentence при умові якщо там
+        #    щось залишається при одноразових спрацювань циклу <60%
+        # 2. повставляти коментарі які знизу по всьому коду
+        # 3. вирішити питання звідки хапає звук наш метод тиші
+
+
+        print(main_list_sentence)
+        print(final_MAIN_text)
