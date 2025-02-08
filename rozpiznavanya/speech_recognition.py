@@ -4,7 +4,7 @@ import numpy as np
 import noisereduce as nr
 from pydub import AudioSegment
 from commands import VoiceCommands
-from work_NLP import Work_NL
+# from work_NLP import Work_NL
 import json
 import time
 from pydub.utils import db_to_float
@@ -31,7 +31,7 @@ class SpeechRecognition():
         self.stream.start_stream()
         self.result = []
         self.voice_commands = VoiceCommands()
-        self.work_nl = Work_NL()
+        # self.work_nl = Work_NL()
         # self.work_nlp = Work_NL()
 
         self.output_data=[]
@@ -90,12 +90,12 @@ class SpeechRecognition():
         self.final_audio = audio_np.tobytes() # перетворення у байти
 
  
-    def delete_key_words_from_begin(self, text, key_word):  # видалення повторів ключовмх слів
+    def delete_key_words_from_begin(self):  # видалення повторів ключовмх слів
         print("ПОЧАТОК ВХОДУ У ЦИКЛ")
         if self.detect_time == 2 and self.i < 7 and self.found == True:
             print("RERERE")
-            for word in key_word:
-                if word in text:
+            for word in self.key_word:
+                if word in self.text:
                     self.i = self.i + 1 # кількість ключових слів, яка може бути на початку, оскільки в подальшому користувач може використовувати ключове слово
                     self.found = True
                     break
@@ -103,12 +103,12 @@ class SpeechRecognition():
                 self.found = False # якщо уже немає ключових слів на початку речення
                 self.i = 0    # __ ПЕРЕВІРИТИ ЧИ ПРАЦЮЄ ЦЯ ЧАСТИНА
         else:
-            self.broadcast_recording(text)
+            self.broadcast_recording(self.text)
 
 
-    def find_key_word(self, text, key_word):    # пошук ключового слова
-        for word in key_word:
-            if word in text:
+    def find_key_word(self):    # пошук ключового слова
+        for word in self.key_word:
+            if word in self.text:
                 self.detect_key_world = True
                 print("РОЗПІЗНАНО КЛЮЧОВЕ СЛОВО")
                 self.start = time.time()
@@ -117,8 +117,8 @@ class SpeechRecognition():
                 break
     
     
-    def search_silence(self, str_audio):   # пошук тиші в аудіопотоці
-        self.list_silence.append(str_audio) # додавання фрагментів після підвищення гучності
+    def search_silence(self):   # пошук тиші в аудіопотоці
+        self.list_silence.append(self.str_audio) # додавання фрагментів після підвищення гучності
         full_audio = sum(self.list_silence) # об'єднання цих фрагментів 
         self.silence = detect_silence(full_audio, min_silence_len=500, silence_thresh=-50, seek_step=100) # налаштування для функції тиші
 
@@ -159,7 +159,14 @@ class SpeechRecognition():
 
 
     def analyze_comand(self, res_key):
-        
+        if self.detect_time == 3: # якщо триває запис команди
+            self.search_silence() # пошук тиші в аудіопотоці
+
+        if time.time() - self.start >= 4.8 and self.detect_time == 2: # якщо користувач не говорить нічого після сказаного ключового слова
+            self.wait_speech() # очікуємо текст після розрізнавання ключових слів
+
+        if self.detect_silence == True:
+            self.found_silence() # дії після знайдення тиші
 
         if len(self.result[res_key]) == 0:
             return
@@ -168,18 +175,11 @@ class SpeechRecognition():
             print(self.text)
                
             if self.detect_key_world == True:
-                self.work_nl.delete_key_words_from_begin(self.text, self.key_word) # видалення повторів ключовмх слів
+                self.delete_key_words_from_begin() # видалення повторів ключовмх слів
             else:
-                self.work_nl.find_key_word(self.text, self.key_word) # пошук ключового слова
+                self.find_key_word() # пошук ключового слова
 
-        if self.detect_time == 3: # якщо триває запис команди
-            self.work_nl.search_silence() # пошук тиші в аудіопотоці
-
-        if time.time() - self.start >= 4.8 and self.detect_time == 2: # якщо користувач не говорить нічого після сказаного ключового слова
-            self.work_nl.wait_speech() # очікуємо текст після розрізнавання ключових слів
-
-        if self.detect_silence == True:
-            self.work_nl.found_silence(self.str_audio) # дії після знайдення тиші
+        
     
 
     
