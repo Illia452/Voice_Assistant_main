@@ -4,14 +4,14 @@ import numpy as np
 import noisereduce as nr
 from pydub import AudioSegment
 from commands import VoiceCommands
-# from work_NLP import Work_NL
+from work_NLP import Work_NL
 import json
 import time
 from pydub.utils import db_to_float
 import itertools
 from find_silence import detect_silence
-# from work_NLP import Work_NL
 from rapidfuzz import fuzz
+import stanza
 
 
 
@@ -25,14 +25,19 @@ class SpeechRecognition():
         self.recognizer = KaldiRecognizer(model, 16000) # розпізнавач
         cap = pyaudio.PyAudio()
 
-        # paInt16 - 16-бітний формат зберігання, frames_per_buffer=2048 - кількість фреймів що зчитуються за один раз        
+        # stanza.download('uk') # Завантажуємо модель при умові якщо цього не зроблено(перший запуск програми з інтернетом)
 
+        self.nlp = stanza.Pipeline('uk', processors='tokenize,mwt,pos,lemma', download_method=None)
+        # download_method - забороняє автоматичне завантаження ресурсів під час виконання pipeline, тобто вмикається офлайн-режим
+        # mwt - Multi-Word Token Expansion - обробляє багатослівні токени — слова, які складаються з кількох частин
+        # pos - Part-of-Speech Tagging - цей процесор визначає частини мови для кожного слова.
+
+        # paInt16 - 16-бітний формат зберігання, frames_per_buffer=2048 - кількість фреймів що зчитуються за один раз        
         self.stream = cap.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=2048)
         self.stream.start_stream()
         self.result = []
         self.voice_commands = VoiceCommands()
-        # self.work_nl = Work_NL()
-        # self.work_nlp = Work_NL()
+        self.work_nl = Work_NL()
 
         self.output_data=[]
         with open('synonyms.json', 'r', encoding='utf-8') as f:
@@ -40,7 +45,7 @@ class SpeechRecognition():
 
         self.detect_command = False
 
-        self.key_word =["опір", "зір зефір", "зір зоря", "зегер", "дзеффіреллі", "зефір",
+        self.key_word =["зельфія","опір", "зір зефір", "зір зоря", "зегер", "дзеффіреллі", "зефір",
                          "захід", "з ефір", "ефір", "земфіра", "засіяти", "захир", "захір",
                            "за часів", "часів", "за шию", "зефірс", "захер"]
 
@@ -53,12 +58,6 @@ class SpeechRecognition():
         self.found = False
         self.detect_silence = False
         self.list_silence = []
-
-        self.time_make_command_scrin = 0.0
-        self.time_make_command_browze = 0.0
-        self.time_make_command_selectfile = 0.0
-
-
         
         
         
@@ -141,12 +140,10 @@ class SpeechRecognition():
 
 
     def found_silence(self): # дії після знайдення тиші
-        self.processing_list(self.list_sentence)
+        self.work_nl.processing_list(self.list_sentence)
+        self.list_sentence = []
         self.detect_silence = False
 
-
-    def processing_list(self, list_sentenceForWork):    # обробка списку 
-        pass
 
     def broadcast_recording(self, text):    # початок запису мовлення після ключового слова
         self.detect_time = 3 # показуємо що триває запис команди
