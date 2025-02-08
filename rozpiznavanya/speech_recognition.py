@@ -106,9 +106,9 @@ class SpeechRecognition():
             print(self.text)
                
             if self.detect_key_world == True:
-                self.work_nl.delete_key_words_from_begin() # видалення повторів ключовмх слів
+                self.work_nl.delete_key_words_from_begin(self.text, self.key_word) # видалення повторів ключовмх слів
             else:
-                self.work_nl.find_key_word() # пошук ключового слова
+                self.work_nl.find_key_word(self.text, self.key_word) # пошук ключового слова
     
 
     
