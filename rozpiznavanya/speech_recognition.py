@@ -90,6 +90,73 @@ class SpeechRecognition():
         self.final_audio = audio_np.tobytes() # перетворення у байти
 
  
+    def delete_key_words_from_begin(self, text, key_word):  # видалення повторів ключовмх слів
+        print("ПОЧАТОК ВХОДУ У ЦИКЛ")
+        if self.detect_time == 2 and self.i < 7 and self.found == True:
+            print("RERERE")
+            for word in key_word:
+                if word in text:
+                    self.i = self.i + 1 # кількість ключових слів, яка може бути на початку, оскільки в подальшому користувач може використовувати ключове слово
+                    self.found = True
+                    break
+            else:
+                self.found = False # якщо уже немає ключових слів на початку речення
+                self.i = 0    # __ ПЕРЕВІРИТИ ЧИ ПРАЦЮЄ ЦЯ ЧАСТИНА
+        else:
+            self.broadcast_recording(text)
+
+
+    def find_key_word(self, text, key_word):    # пошук ключового слова
+        for word in key_word:
+            if word in text:
+                self.detect_key_world = True
+                print("РОЗПІЗНАНО КЛЮЧОВЕ СЛОВО")
+                self.start = time.time()
+                self.detect_time = 2
+                self.found = True
+                break
+    
+    
+    def search_silence(self, str_audio):   # пошук тиші в аудіопотоці
+        self.list_silence.append(str_audio) # додавання фрагментів після підвищення гучності
+        full_audio = sum(self.list_silence) # об'єднання цих фрагментів 
+        self.silence = detect_silence(full_audio, min_silence_len=500, silence_thresh=-50, seek_step=100) # налаштування для функції тиші
+
+        for silence in self.silence:
+            if (silence[1] - silence[0]) >= 1800: # шукаємо тишу в 1800мс
+                print("ЗНАЙДЕНО ТИШУ")
+                self.detect_key_world = False # перестаємо записувати нашу команду
+                self.detect_silence = True # знайдено тишу
+                self.detect_time = 1 # 
+                self.list_silence = []
+                full_audio = None
+                break
+
+    def wait_speech(self): # очікуємо текст після розрізнавання ключових слів
+        print("ЧАС ОЧІКУВАННЯ МИНУВ")
+        self.detect_key_world = False
+        self.start = 0.0
+        self.detect_time = 1
+        self.i = 0
+
+
+    def found_silence(self): # дії після знайдення тиші
+        self.processing_list(self.list_sentence)
+        self.detect_silence = False
+
+
+    def processing_list(self, list_sentenceForWork):    # обробка списку 
+        pass
+
+    def broadcast_recording(self, text):    # початок запису мовлення після ключового слова
+        self.detect_time = 3 # показуємо що триває запис команди
+        self.i = 0
+        print("МИ В ЦИКЛІ")
+        
+        sentence = text.split()
+        self.list_sentence.append(sentence)
+        print(f"НАША КОМАНДА{self.list_sentence}")
+
 
     def analyze_comand(self, res_key):
         
