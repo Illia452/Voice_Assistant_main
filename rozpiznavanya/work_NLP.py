@@ -46,8 +46,8 @@ class Work_NL():
                 break
     
 
-    def search_silence(self):   # пошук тиші в аудіопотоці
-        self.list_silence.append(self.str_audio) # додавання фрагментів після підвищення гучності
+    def search_silence(self, str_audio):   # пошук тиші в аудіопотоці
+        self.list_silence.append(str_audio) # додавання фрагментів після підвищення гучності
         full_audio = sum(self.list_silence) # об'єднання цих фрагментів 
         self.silence = detect_silence(full_audio, min_silence_len=500, silence_thresh=-50, seek_step=100) # налаштування для функції тиші
 
@@ -57,6 +57,8 @@ class Work_NL():
                 self.detect_key_world = False # перестаємо записувати нашу команду
                 self.detect_silence = True # знайдено тишу
                 self.detect_time = 1 # 
+                self.list_silence = []
+                full_audio = None
                 break
 
 
@@ -74,13 +76,7 @@ class Work_NL():
 
 
     def processing_list(self, list_sentenceForWork):    # обробка списку 
-        numberOFsentence = len(list_sentenceForWork) # кількість речень
-        main_sentence = list_sentenceForWork[0] 
-
-        for sentence in list_sentenceForWork:
-            for word, main_word in sentence, main_sentence:
-                similarity = (fuzz.ratio())
-
+        pass
 
     def broadcast_recording(self, text):    # початок запису мовлення після ключового слова
         self.detect_time = 3 # показуємо що триває запис команди

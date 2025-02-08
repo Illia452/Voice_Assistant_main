@@ -40,7 +40,9 @@ class SpeechRecognition():
 
         self.detect_command = False
 
-        self.key_word =["дзеффіреллі", "зефір", "захід", "з ефір", "ефір", "земфіра", "засіяти", "захир", "захір", "за часів", "часів", "за шию", "зефірс", "захер"]
+        self.key_word =["опір", "зір зефір", "зір зоря", "зегер", "дзеффіреллі", "зефір",
+                         "захід", "з ефір", "ефір", "земфіра", "засіяти", "захир", "захір",
+                           "за часів", "часів", "за шию", "зефірс", "захер"]
 
         self.time_make_command = 0.0
         self.list_sentence = []
@@ -90,14 +92,7 @@ class SpeechRecognition():
  
 
     def analyze_comand(self, res_key):
-        if self.detect_time == 3: # якщо триває запис команди
-            self.work_nl.search_silence() # пошук тиші в аудіопотоці
-
-        if time.time() - self.start >= 4.8 and self.detect_time == 2: # якщо користувач не говорить нічого після сказаного ключового слова
-            self.work_nl.wait_speech() # очікуємо текст після розрізнавання ключових слів
-
-        if self.detect_silence == True:
-            self.work_nl.found_silence() # дії після знайдення тиші
+        
 
         if len(self.result[res_key]) == 0:
             return
@@ -109,6 +104,15 @@ class SpeechRecognition():
                 self.work_nl.delete_key_words_from_begin(self.text, self.key_word) # видалення повторів ключовмх слів
             else:
                 self.work_nl.find_key_word(self.text, self.key_word) # пошук ключового слова
+
+        if self.detect_time == 3: # якщо триває запис команди
+            self.work_nl.search_silence() # пошук тиші в аудіопотоці
+
+        if time.time() - self.start >= 4.8 and self.detect_time == 2: # якщо користувач не говорить нічого після сказаного ключового слова
+            self.work_nl.wait_speech() # очікуємо текст після розрізнавання ключових слів
+
+        if self.detect_silence == True:
+            self.work_nl.found_silence(self.str_audio) # дії після знайдення тиші
     
 
     
