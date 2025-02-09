@@ -62,7 +62,8 @@ class Work_NL():
         print("----------------------------------------------")
         print(self.final_MAIN_text)
         print("______________________________________________")
-
+        self.final_MAIN_text = []
+        self.main_list_sentence = []
 
 
 work_NLP = Work_NL()
