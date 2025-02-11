@@ -3,7 +3,7 @@ import pyaudio
 import numpy as np
 import noisereduce as nr
 from pydub import AudioSegment
-from commands import VoiceCommands
+from list_commands import VoiceCommands
 from work_NLP import Work_NL
 import json
 import time
@@ -25,12 +25,6 @@ class SpeechRecognition():
         self.recognizer = KaldiRecognizer(model, 16000) # розпізнавач
         cap = pyaudio.PyAudio()
 
-        # stanza.download('uk') # Завантажуємо модель при умові якщо цього не зроблено(перший запуск програми з інтернетом)
-
-        self.nlp = stanza.Pipeline('uk', processors='tokenize,mwt,pos,lemma', download_method=None)
-        # download_method - забороняє автоматичне завантаження ресурсів під час виконання pipeline, тобто вмикається офлайн-режим
-        # mwt - Multi-Word Token Expansion - обробляє багатослівні токени — слова, які складаються з кількох частин
-        # pos - Part-of-Speech Tagging - цей процесор визначає частини мови для кожного слова.
 
         # paInt16 - 16-бітний формат зберігання, frames_per_buffer=2048 - кількість фреймів що зчитуються за один раз        
         self.stream = cap.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=2048)
@@ -45,7 +39,7 @@ class SpeechRecognition():
 
         self.detect_command = False
 
-        self.key_word =["зельфія","опір", "зір зефір", "зір зоря", "зегер", "дзеффіреллі", "зефір",
+        self.key_word =["заір","зельфія","опір", "зір зефір", "зір зоря", "зегер", "дзеффіреллі", "зефір",
                          "захід", "з ефір", "ефір", "земфіра", "засіяти", "захир", "захір",
                            "за часів", "часів", "за шию", "зефірс", "захер", "захур", "заньєр", "за кар'єру"]
 
@@ -131,7 +125,7 @@ class SpeechRecognition():
                 full_audio = None
                 break
 
-    def wait_speech(self): # очікуємо текст після розрізнавання ключових слів
+    def wait_speech(self): # очікуємо текст після розпізнавання ключових слів
         print("ЧАС ОЧІКУВАННЯ МИНУВ")
         self.detect_key_world = False
         self.start = 0.0

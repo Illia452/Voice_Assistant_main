@@ -2,6 +2,7 @@ import time
 from rapidfuzz import fuzz
 from find_silence import detect_silence
 import stanza
+from command_execution import MakeCommands
 
 
 class Work_NL():
@@ -20,6 +21,7 @@ class Work_NL():
         self.num = -2
         self.final_MAIN_text = []
         self.possible_worlds = []
+        self.make_command = MakeCommands()
 
     def processing_list(self, list_sentenceForWork):    # обробка списку 
 
@@ -62,8 +64,12 @@ class Work_NL():
         print("----------------------------------------------")
         print(self.final_MAIN_text)
         print("______________________________________________")
+
+        self.make_command.analyze_command(self.final_MAIN_text)
         self.final_MAIN_text = []
         self.main_list_sentence = []
+
+        
 
 
 work_NLP = Work_NL()
