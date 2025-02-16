@@ -10,11 +10,24 @@ class MakeCommands():
             self.output_data = json.load(f)
         self.list_command = []
         self.command = []
+        self.indexx = False
+
+    def text_from_App(self, text_from_edit):
+
+        self.text_from_edit = text_from_edit
+        self.indexx = True
+        self.analyze_command(self.text_from_edit)
+        
 
     def analyze_command(self, text):
-        for i in text:
-            self.main_text.append(' '.join(list(i)))
+        if self.indexx == True:
+            self.main_text = text
+            self.indexx = False
+        else:
+            for i in text:
+                self.main_text.append(' '.join(list(i)))
 
+        # self.main_text = self.text_from_edit
         print(f"ОСТАННЯ ФРАЗА: {self.main_text}")
 
         for key, vallue in self.output_data.items():

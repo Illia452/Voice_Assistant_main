@@ -12,10 +12,18 @@ import itertools
 from find_silence import detect_silence
 from rapidfuzz import fuzz
 import stanza
+from designer_app import Ui_MainWindow
+import threading
+from PyQt5 import QtWidgets
+import sys
+from command_execution import MakeCommands
 
 
-
-
+def GUI_Start(recognitionInstance):
+    app = QtWidgets.QApplication(sys.argv)
+    ui = Ui_MainWindow(recognitionInstance)
+    ui.MainWindow.show()
+    sys.exit(app.exec_())
 
 
 
@@ -25,6 +33,8 @@ class SpeechRecognition():
         self.recognizer = KaldiRecognizer(model, 16000) # розпізнавач
         cap = pyaudio.PyAudio()
 
+        self.MIC_IS_OFF = False
+
 
         # paInt16 - 16-бітний формат зберігання, frames_per_buffer=2048 - кількість фреймів що зчитуються за один раз        
         self.stream = cap.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=2048)
@@ -32,6 +42,7 @@ class SpeechRecognition():
         self.result = []
         self.voice_commands = VoiceCommands()
         self.work_nl = Work_NL()
+        self.make_command = MakeCommands()
 
         self.output_data=[]
         with open('synonyms.json', 'r', encoding='utf-8') as f:
@@ -54,7 +65,9 @@ class SpeechRecognition():
         self.list_silence = []
         
         
-        
+    def get_text(self, text):
+        self.make_command.text_from_App(text)
+
 
     def delete_noise(self):
 
@@ -176,8 +189,9 @@ class SpeechRecognition():
     
 
     def print_text(self):
-
         while True:
+            if self.MIC_IS_OFF:
+                continue
             self.delete_noise()
             self.volume_up()
 
@@ -197,4 +211,7 @@ class SpeechRecognition():
 
 
 speech_recognition = SpeechRecognition()
+time.sleep(1)
+gui = threading.Thread(target=GUI_Start, args=(speech_recognition,))
+gui.start()
 speech_recognition.print_text()

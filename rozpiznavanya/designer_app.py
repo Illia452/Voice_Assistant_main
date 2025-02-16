@@ -15,10 +15,13 @@ from PyQt5.QtWidgets import QGraphicsDropShadowEffect
 from PyQt5.QtCore import Qt
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtGui import QPixmap
+import threading
 
 class Ui_MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, speech_recognition):
         super().__init__()
+        self.speech_recognition = speech_recognition
+        # self.speech_recognition.textToDoCommand(text)
         self.setupUi()
         self.setGeometry(500,150,960,600)
         
@@ -279,6 +282,8 @@ class Ui_MainWindow(QMainWindow):
         self.but_send.setIcon(icon4)
         self.but_send.setObjectName("but_send")
 
+        self.but_send.clicked.connect(self.get_text_from_but_send)
+        self.saved_text = ""
 
 
 
@@ -293,7 +298,13 @@ class Ui_MainWindow(QMainWindow):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
-
+    def get_text_from_but_send(self):
+        # Отримуємо текст з поля вводу
+        self.saved_text = self.lineEdit.text()
+        if len(self.saved_text) != 0:
+            self.speech_recognition.get_text(self.saved_text)
+        
+        self.lineEdit.clear()
 
 
 
@@ -351,6 +362,7 @@ class Ui_MainWindow(QMainWindow):
 
     def on_click_but_micro(self):
         if self.is_on_but_micro:
+            self.speech_recognition.MIC_IS_OFF = True
             self.but_micro.setStyleSheet("""
 			QPushButton {
 				background-color: rgba(230, 160, 160, 0.9);
@@ -377,6 +389,7 @@ class Ui_MainWindow(QMainWindow):
 									
 			}
 	    """)
+            self.speech_recognition.MIC_IS_OFF = False
             icon1 = QtGui.QIcon()
             icon1.addPixmap(QtGui.QPixmap("icon/mic_on_regular_icon.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.but_micro.setIcon(icon1)
