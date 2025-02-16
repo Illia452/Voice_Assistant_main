@@ -53,4 +53,5 @@ class MakeCommands():
                     #     self.voice_commands.SelectFile()
                     #     self.time_make_command_selectfile = time.time()
         self.main_text = []
-        self.list_command = []
+        self.list_command = [] 
+        
