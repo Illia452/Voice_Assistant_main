@@ -34,8 +34,9 @@ class SpeechRecognition():
         cap = pyaudio.PyAudio()
 
         self.MIC_IS_OFF = False
+        self.START_BUT = True
 
-
+        self.work_assis = None
         # paInt16 - 16-бітний формат зберігання, frames_per_buffer=2048 - кількість фреймів що зчитуються за один раз        
         self.stream = cap.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=2048)
         self.stream.start_stream()
@@ -52,7 +53,7 @@ class SpeechRecognition():
 
         self.key_word =["заір","зельфія","опір", "зір зефір", "зір зоря", "зегер", "дзеффіреллі", "зефір",
                          "захід", "з ефір", "ефір", "земфіра", "засіяти", "захир", "захір",
-                           "за часів", "часів", "за шию", "зефірс", "захер", "захур", "заньєр", "за кар'єру"]
+                           "за часів", "часів", "за шию", "зефірс", "захер", "захур", "заньєр", "за кар'єру", "звір"]
 
         self.time_make_command = 0.0
         self.list_sentence = []
@@ -192,6 +193,14 @@ class SpeechRecognition():
         while True:
             if self.MIC_IS_OFF:
                 continue
+            if self.START_BUT == False:
+                self.work_assis = False
+                continue
+            else:
+                if self.work_assis == False:
+                    # запуск пакетів
+                    self.work_assis = True
+
             self.delete_noise()
             self.volume_up()
 
