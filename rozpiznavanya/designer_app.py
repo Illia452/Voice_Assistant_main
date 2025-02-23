@@ -12,15 +12,23 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 from PyQt5.QtGui import QColor, QFont
 from PyQt5.QtWidgets import QGraphicsDropShadowEffect
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtGui import QPixmap
 import threading
+import json
+
 
 class Ui_MainWindow(QMainWindow):
     def __init__(self, speech_recognition):
         super().__init__()
         self.speech_recognition = speech_recognition
+        self.history_data = []
+        self.len_write_history = []
+        self.write_history = []
+        self.last_history_size = 0
+        with open('history.json', 'r', encoding='utf-8') as f:
+            self.history_data = json.load(f)
         # self.speech_recognition.textToDoCommand(text)
         self.setupUi()
 
@@ -177,7 +185,7 @@ class Ui_MainWindow(QMainWindow):
         self.image_label.setPixmap(pixmap)  # Встановлюємо зображення в QLabel
         self.image_label.setAlignment(Qt.AlignCenter)
         shadow_i = QGraphicsDropShadowEffect()
-        shadow_i.setBlurRadius(25)  # Розмиття
+        shadow_i.setBlurRadius(50)  # Розмиття
         shadow_i.setOffset(0, 4)  # Зміщення тіні (по X та Y)
         shadow_i.setColor(QColor(0, 0, 0, 100))  # Колір тіні (чорний з прозорістю)
         self.image_label.setGraphicsEffect(shadow_i)
@@ -308,7 +316,7 @@ class Ui_MainWindow(QMainWindow):
 
         # ВІКНО ІСТОРІЇ
         self.his_window = QtWidgets.QWidget(self.centralwidget)
-        self.his_window.setGeometry(QtCore.QRect(710, 120, 220, 450))
+        self.his_window.setGeometry(QtCore.QRect(685, 120, 245, 450))
         self.his_window # Виводимо віджет на передній план
         # self.his_window.raise_()
         self.his_window.setStyleSheet("""
@@ -334,22 +342,18 @@ class Ui_MainWindow(QMainWindow):
         self.text_his.setAlignment(Qt.AlignCenter)
 
         self.scroll_area = QtWidgets.QScrollArea(self.his_window)
-        self.scroll_area.setGeometry(10, 45, 200, 395)  
+        self.scroll_area.setGeometry(10, 45, 225, 395)  
         self.scroll_area.setWidgetResizable(True) 
 
         self.scroll_content = QtWidgets.QWidget()
         self.scroll_layout = QtWidgets.QVBoxLayout(self.scroll_content)  # Вертикальний Layout
 
-        # Додаємо багато елементів (імітація історії)
-        for i in range(20):
-            label = QtWidgets.QLabel(f"Історія {i+1}")
-            self.scroll_layout.addWidget(label)
+        
 
-        self.scroll_area.setWidget(self.scroll_content)
 
        
         
-    
+
 
 
 
@@ -418,7 +422,9 @@ class Ui_MainWindow(QMainWindow):
 
 
 
-
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.check_history)  # Підключення функції до сигналу
+        self.timer.start(2000) 
 
 
     
@@ -437,9 +443,43 @@ class Ui_MainWindow(QMainWindow):
         # self.retranslateUi()
         # QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
-    
+    def check_history(self):
 
+        with open('history.json', 'r', encoding='utf-8') as f:
+            self.history_data = json.load(f)
+        for key, vallue in self.history_data.items():
+            len_history_json = len(vallue)
 
+            self.len_write_history = len(self.write_history)
+
+            if len_history_json > self.len_write_history:
+
+                self.write_history = vallue
+        
+        
+
+                history_list = self.write_history[::-1]
+
+                for i in reversed(range(self.scroll_layout.count())): 
+                    self.scroll_layout.itemAt(i).widget().setParent(None)
+
+                for val in history_list:
+                    part_his_win = QtWidgets.QLabel()
+                    part_his_win.setStyleSheet("""
+                        QWidget {
+                            background-color: #d1d5db;
+                            border-radius: 10px;
+                            border: 1px solid #d1d5db;
+                        }
+                    """)
+                    label = QtWidgets.QLabel(f"Команда {val[0]}", part_his_win)
+                    label2 = QtWidgets.QLabel(f"Час {val[1]}", part_his_win)
+                    self.scroll_layout.addWidget(part_his_win)
+                    self.scroll_layout.addWidget(label)
+                    self.scroll_layout.addWidget(label2)
+
+                    self.scroll_area.setWidget(self.scroll_content)
+                    self.scroll_layout.update()
 
     def get_text_from_but_send(self):
         # Отримуємо текст з поля вводу
@@ -493,7 +533,6 @@ class Ui_MainWindow(QMainWindow):
         else:
             self.status_start = True
             self.speech_recognition.START_BUT = False
-            print("rerere")
             self.block.show()
 #             self.block.setStyleSheet("""
 #             QWidget {
@@ -562,6 +601,11 @@ class Ui_MainWindow(QMainWindow):
         self.is_on_but_micro = not self.is_on_but_micro
 
 
+        
+    def closeEvent(self, event):
+        self.speech_recognition.close_win = True
+
+        event.accept()  # Закриває вікно
 
 
 

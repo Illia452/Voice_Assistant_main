@@ -35,6 +35,7 @@ class SpeechRecognition():
 
         self.MIC_IS_OFF = False
         self.START_BUT = True
+        self.close_win = False
 
         self.work_assis = None
         # paInt16 - 16-бітний формат зберігання, frames_per_buffer=2048 - кількість фреймів що зчитуються за один раз        
@@ -64,7 +65,8 @@ class SpeechRecognition():
         self.found = False
         self.detect_silence = False
         self.list_silence = []
-        
+
+
         
     def get_text(self, text):
         self.make_command.text_from_App(text)
@@ -191,6 +193,9 @@ class SpeechRecognition():
 
     def print_text(self):
         while True:
+            if self.close_win == True:
+                print("cdcdcfvdtntybvdfcfgbgfdfghgfd")
+                break
             if self.MIC_IS_OFF:
                 continue
             if self.START_BUT == False:

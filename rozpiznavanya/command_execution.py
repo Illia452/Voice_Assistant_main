@@ -47,6 +47,7 @@ class MakeCommands():
         with open('history.json', 'w', encoding='utf-8') as f:
             json.dump(self.history_data, f, ensure_ascii=False, indent=4)
         
+        
 
     def text_from_App(self, text_from_edit):
 

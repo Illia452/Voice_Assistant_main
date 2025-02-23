@@ -1,11 +1,11 @@
-import time
+import sys, os, subprocess, inspect
 
-loc_time = time.localtime()
-min = loc_time.tm_min
-hour = loc_time.tm_hour
-mon = loc_time.tm_mon
-year = loc_time.tm_year
 
-timmee = (f"{year}.{mon} - {hour}:{min}")
-
-print(timmee)
+pFileName = os.path.abspath(inspect.getfile(inspect.currentframe()))
+pFileDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+print ( 'pFileName = %s\n' % pFileName)
+print ('pFileDir = %s' % pFileDir)
+subprocess.Popen(r'explorer /select,%s' % pFileName)
+if (pFileName.endswith(".png") or pFileName.endswith(".py") or pFileName.endswith(".txt")):
+    # subprocess.call([r'C:\Program Files\Notepad++\notepad++.exe',  pFileName])
+    subprocess.Popen([r'C:\Program Files\Notepad++\notepad++.exe',  pFileName])
