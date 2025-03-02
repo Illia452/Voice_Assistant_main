@@ -193,11 +193,8 @@ class SpeechRecognition():
 
     def print_text(self):
         while True:
-            if self.close_win == True:
-                print("cdcdcfvdtntybvdfcfgbgfdfghgfd")
-                break
-            if self.MIC_IS_OFF:
-                continue
+            if self.MIC_IS_OFF:  # якщо кнопка мікрофону вимкнена то і наша програма нічого не робить 
+                continue            
             if self.START_BUT == False:
                 self.work_assis = False
                 continue

@@ -7,10 +7,14 @@ from command_execution import MakeCommands
 
 class Work_NL():
     def __init__(self):
-        
-        # stanza.download('uk') # Завантажуємо модель при умові якщо цього не зроблено(перший запуск програми з інтернетом)
+        # Завантажуємо модель при умові якщо цього не зроблено(перший запуск програми з інтернетом)
+        # stanza.download('uk') 
+        # self.nlp = stanza.Pipeline('uk', processors='tokenize,mwt,pos,lemma')
+
 
         self.nlp = stanza.Pipeline('uk', processors='tokenize,mwt,pos,lemma', download_method=None)
+
+        
         # download_method - забороняє автоматичне завантаження ресурсів під час виконання pipeline, тобто вмикається офлайн-режим
         # mwt - Multi-Word Token Expansion - обробляє багатослівні токени — слова, які складаються з кількох частин
         # pos - Part-of-Speech Tagging - цей процесор визначає частини мови для кожного слова.
@@ -37,9 +41,9 @@ class Work_NL():
                     elif 70 < similarity < 80: # якщо ж слово має менше 80% cхожості то замінюємо його з потоку vosk
                         self.main_sentence[i] = list_sentenceForWork[sentence_num][i]
                     elif similarity <= 70:
-                        self.possible_worlds.append(list_sentenceForWork[sentence_num][i])
-                        self.main_list_sentence.append(self.main_sentence)
-                        self.main_sentence = self.possible_worlds
+                        self.possible_worlds.append(list_sentenceForWork[sentence_num][i]) # при умові якщо схожість менше 70% то зберігіємо наше основне речення в основний список речень...
+                        self.main_list_sentence.append(self.main_sentence)                 # ...обнуляємо змінну з основним реченням та починаємо з 0 основне речення оскільки є шанс...
+                        self.main_sentence = self.possible_worlds                          # ...що це як нове речення або ж команда з нового рядка
                         self.other_main_sentence = []
                         self.possible_worlds = []
                     
@@ -50,14 +54,10 @@ class Work_NL():
 
 
         for text in self.main_list_sentence:
-            main_text = ' '.join(text)
-            doc = self.nlp(main_text)
-            lemmas = [word.lemma for sentence in doc.sentences for word in sentence.words]
+            main_text = ' '.join(text)                          # процес трансформації основних речень в self.main_list_sentence(основному списку) з списку в ""
+            doc = self.nlp(main_text)                           # далі лематизація та токенізація
+            lemmas = [word.lemma for sentence in doc.sentences for word in sentence.words]   
             self.final_MAIN_text.append(lemmas)
-        # 1. додати перевірку other_main_sentence при умові якщо там
-        #    щось залишається при одноразових спрацювань циклу <60%
-        # 2. повставляти коментарі які знизу по всьому коду
-        # 3. вирішити питання звідки хапає звук наш метод тиші
 
         print("______________________________________________")
         print(self.main_list_sentence)
@@ -65,7 +65,7 @@ class Work_NL():
         print(self.final_MAIN_text)
         print("______________________________________________")
 
-        self.make_command.analyze_command(self.final_MAIN_text)
+        self.make_command.analyze_command(self.final_MAIN_text)     # передаємо наш фінальний список основних речень у наступний метод для аналізу 
         self.final_MAIN_text = []
         self.main_list_sentence = []
 

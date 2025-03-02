@@ -20,7 +20,7 @@ class MakeCommands():
         self.one_time = []
         self.indexx = False
 
-    def remember_time(self, key_comm):
+    def remember_time(self, key_comm):  # метод для фіксації часу коли була зроблена певна команда щоб пізініше зберегти у json для історії
         loc_time = time.localtime()
         self.min = loc_time.tm_min
         self.hour = loc_time.tm_hour
@@ -49,7 +49,7 @@ class MakeCommands():
         
         
 
-    def text_from_App(self, text_from_edit):
+    def text_from_App(self, text_from_edit):  # команда аюо ж текст який прийшов з поля вводу у додатку
 
         self.text_from_edit = text_from_edit
         self.indexx = True
@@ -57,7 +57,7 @@ class MakeCommands():
         
 
     def analyze_command(self, text):
-        if self.indexx == True:
+        if self.indexx == True: # тут перевіряється звідки команда або ж сказана голосом або ж з поля вводу у додатку
             text = [text]
             self.main_text = text
             self.indexx = False

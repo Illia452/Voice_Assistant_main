@@ -178,7 +178,7 @@ class Ui_MainWindow(QMainWindow):
 
 
 
-                # ІКОНКА
+                # ІКОНКА ЗЕФІРА
         self.image_label = QLabel(self.centralwidget)  # Створюємо новий QLabel
         self.image_label.setGeometry(370, 80, 200, 200)  # Встановлюємо розмір та позицію
         pixmap = QPixmap('icon/zefir.png')  # Завантажуємо зображення
@@ -443,7 +443,7 @@ class Ui_MainWindow(QMainWindow):
         # self.retranslateUi()
         # QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
-    def check_history(self):
+    def check_history(self):  # перевірка чи оновилася наша історія
 
         with open('history.json', 'r', encoding='utf-8') as f:
             self.history_data = json.load(f)
