@@ -1,11 +1,24 @@
-import sys, os, subprocess, inspect
+import whisper
+import time
+
+# Завантажуємо модель
+model = whisper.load_model("turbo")
+start = time.time()
+# Використовуємо метод transcribe, вказуючи мову
+result = model.transcribe("AUDIO2.m4a", language="uk")
+
+print(result["text"])
+print(time.time()-start)
 
 
-pFileName = os.path.abspath(inspect.getfile(inspect.currentframe()))
-pFileDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-print ( 'pFileName = %s\n' % pFileName)
-print ('pFileDir = %s' % pFileDir)
-subprocess.Popen(r'explorer /select,%s' % pFileName)
-if (pFileName.endswith(".png") or pFileName.endswith(".py") or pFileName.endswith(".txt")):
-    # subprocess.call([r'C:\Program Files\Notepad++\notepad++.exe',  pFileName])
-    subprocess.Popen([r'C:\Program Files\Notepad++\notepad++.exe',  pFileName])
+# tiny
+#  Ще, що, що, кіпера красне, цього світі можна з творити? О чому хто пати на шею? Мо можна це 20 динерік, що не були призвенні до арстретського війська, або такі, що були коли свіни не відвійськового, або не товаєсть, ложби, всього один, два, чих трей.
+# 1.973820447921753
+
+# base
+#  Що ще таке прекрасно, все в освіті можна створити? Хочу могло вступати лише юник віде. Могло чизавати один рік, чи не були призвені до арстрійського війська, або такі, щоб були коли звільнені від військового, ритової зложби, всього один, два, чи три.
+# 3.5597481727600098
+
+# small
+#  Що ж таке прекрасне в цьому світі можна створити? Хоч могли б ступати лише юники, можливо чи за 21 рік, що не були призвені до австрійського війська, або такі, що були колись вінені від військового фронтової служби. Всього 1, 2 чи 3.
+# 7.534647226333618
