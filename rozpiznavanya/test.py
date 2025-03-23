@@ -1,11 +1,20 @@
-import sys, os, subprocess, inspect
+import selenium
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import time
+
+browse = webdriver.Chrome()
+
+browse.get("https://github.com/Illia452/Voice_Assistant_main")
+
+time.sleep(5)
+browse.find_element(By.LINK_TEXT, "Sign in").click()
+time.sleep(1)
+emeil = browse.find_element(By.ID, "login_field")
+emeil.click()
+emeil.send_keys("whebcjehhcbwj")
 
 
-pFileName = os.path.abspath(inspect.getfile(inspect.currentframe()))
-pFileDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-print ( 'pFileName = %s\n' % pFileName)
-print ('pFileDir = %s' % pFileDir)
-subprocess.Popen(r'explorer /select,%s' % pFileName)
-if (pFileName.endswith(".png") or pFileName.endswith(".py") or pFileName.endswith(".txt")):
-    # subprocess.call([r'C:\Program Files\Notepad++\notepad++.exe',  pFileName])
-    subprocess.Popen([r'C:\Program Files\Notepad++\notepad++.exe',  pFileName])
+# browse.find_element(By.CLASS_NAME, "Button-label").click()
+
+time.sleep(10000)
