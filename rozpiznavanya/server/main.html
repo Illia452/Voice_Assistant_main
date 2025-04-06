@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>test</title>
+</head>
+<body>
+    <h2>Audio Stream</h2>
+
+
+    <script>
+        let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let ws = new WebSocket("ws://127.0.0.1:8000/ws");
+        let mediaStream = audioContext.createMediaStreamDestination(); // Віртуальний мікрофон
+        let audioQueue = []; // Черга аудіофрагментів
+
+        ws.onmessage = async function(event) {
+            try {
+                let arrayBuffer = await event.data.arrayBuffer();
+
+                let audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+                let source = audioContext.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(mediaStream); // Підключаємо аудіо до віртуального мікрофона
+
+                if (audioQueue.length === 0) {
+                    source.start();
+                } else {
+                    source.start(audioQueue[audioQueue.length - 1].stopTime);
+                }
+
+                audioQueue.push({ source, stopTime: audioContext.currentTime + audioBuffer.duration });
+                source.onended = () => {
+                    audioQueue.shift(); // Видаляємо відтворені дані
+                };
+            } catch (error) {
+                console.error("Audio processing error:", error);
+            }
+        };
+
+        // Додаємо цей "мікрофон" у MediaStream
+        navigator.mediaDevices.getUserMedia = async () => {
+            return mediaStream.stream;
+        };
+    </script>
+</body>
+</html>
