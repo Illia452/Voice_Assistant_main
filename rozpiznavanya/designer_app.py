@@ -17,6 +17,7 @@ from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtGui import QPixmap
 import threading
 import json
+import time
 
 
 class Ui_MainWindow(QMainWindow):
@@ -26,7 +27,7 @@ class Ui_MainWindow(QMainWindow):
         self.history_data = []
         self.len_write_history = []
         self.write_history = []
-        self.last_history_size = 0
+        self.last_history_size = 0  
         with open('history.json', 'r', encoding='utf-8') as f:
             self.history_data = json.load(f)
         # self.speech_recognition.textToDoCommand(text)
