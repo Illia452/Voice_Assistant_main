@@ -45,11 +45,9 @@ class SpeechRecognition():
         self.voice_commands = VoiceCommands()
         self.work_nl = Work_NL()
         self.make_command = MakeCommands()
-
         self.output_data=[]
         with open('synonyms.json', 'r', encoding='utf-8') as f:
             self.output_data = json.load(f)
-
         self.detect_command = False
 
         self.key_word =["заір","зельфія","опір", "зір зефір", "зір зоря", "зегер", "дзеффіреллі", "зефір",
