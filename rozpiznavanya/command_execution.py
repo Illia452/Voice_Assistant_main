@@ -7,11 +7,21 @@ class MakeCommands():
         self.main_text = []
         self.voice_commands = VoiceCommands()
         self.output_data=[]
+
+        print("Початок другого зчитування синонімів (command_execution.py)")
+        time_synonyms2 = time.time()
         with open('synonyms.json', 'r', encoding='utf-8') as f:
             self.output_data = json.load(f)
+        print(f"Час зчитування синонімів (command_execution.py) {time.time()-time_synonyms2}")
+        
         self.history_data = []
+
+        print("Початок зчитування історії (command_execution.py)")
+        time_history = time.time()
         with open('history.json', 'r', encoding='utf-8') as f:
             self.history_data = json.load(f)
+        print(f"Час зчитування історії (command_execution.py) {time.time()-time_history}")
+
         self.list_ = []
         self.command = []
         self.list_command = []

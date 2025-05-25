@@ -21,9 +21,8 @@ import time
 
 
 class Ui_MainWindow(QMainWindow):
-    def __init__(self, speech_recognition):
+    def __init__(self):
         super().__init__()
-        self.speech_recognition = speech_recognition
         self.history_data = []
         self.len_write_history = []
         self.write_history = []
@@ -493,8 +492,8 @@ class Ui_MainWindow(QMainWindow):
         # Отримуємо текст з поля вводу
         self.saved_text = self.lineEdit.text()
         self.lineEdit.clear()
-        if len(self.saved_text) != 0:
-            self.speech_recognition.get_text(self.saved_text)
+        # if len(self.saved_text) != 0:
+        #     self.speech_recognition.get_text(self.saved_text)
         
 
 
@@ -521,7 +520,6 @@ class Ui_MainWindow(QMainWindow):
         
         if self.is_on_but_start:
             self.status_start = False
-            self.speech_recognition.START_BUT = True
             self.block.hide()
             self.label_active.setText("Активний")
             self.but_start.setStyleSheet("""
@@ -540,7 +538,6 @@ class Ui_MainWindow(QMainWindow):
             self.but_start.setIconSize(QtCore.QSize(20, 20))
         else:
             self.status_start = True
-            self.speech_recognition.START_BUT = False
             self.block.show()
 #             self.block.setStyleSheet("""
 #             QWidget {
@@ -574,7 +571,6 @@ class Ui_MainWindow(QMainWindow):
 
     def on_click_but_micro(self):
         if self.is_on_but_micro:
-            self.speech_recognition.MIC_IS_OFF = True
             self.but_micro.setStyleSheet("""
 			QPushButton {
 				background-color: rgba(230, 160, 160, 0.9);
@@ -601,7 +597,7 @@ class Ui_MainWindow(QMainWindow):
 									
 			}
 	    """)
-            self.speech_recognition.MIC_IS_OFF = False
+
             icon1 = QtGui.QIcon()
             icon1.addPixmap(QtGui.QPixmap("icon/mic_on_regular_icon.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.but_micro.setIcon(icon1)
@@ -610,10 +606,10 @@ class Ui_MainWindow(QMainWindow):
 
 
         
-    def closeEvent(self, event):
-        self.speech_recognition.close_win = True
+    # def closeEvent(self, event):
+    #     self.speech_recognition.close_win = True
 
-        event.accept()  # Закриває вікно
+    #     event.accept()  # Закриває вікно
 
 
 

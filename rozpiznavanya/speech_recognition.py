@@ -29,8 +29,12 @@ def GUI_Start(recognitionInstance):
 
 class SpeechRecognition():
     def __init__(self):
+        print("Початок завантаження Vosk")
+        vosk_time = time.time()
         model = Model(r'..\models\speech_to_text\vosk-model-uk-v3') 
         self.recognizer = KaldiRecognizer(model, 16000) # розпізнавач
+        print(f"Vosk запускався {time.time()-vosk_time}")
+
         cap = pyaudio.PyAudio()
 
         self.MIC_IS_OFF = False
@@ -46,8 +50,12 @@ class SpeechRecognition():
         self.work_nl = Work_NL()
         self.make_command = MakeCommands()
         self.output_data=[]
+        print("Початок зчитування синонімів (speech_recoginition.py)")
+        time_synonyms = time.time()
         with open('synonyms.json', 'r', encoding='utf-8') as f:
             self.output_data = json.load(f)
+        print(f"Час зчитування синонімів (speech_recoginition.py) {time.time()-time_synonyms}")
+        
         self.detect_command = False
 
         self.key_word =["заір","зельфія","опір", "зір зефір", "зір зоря", "зегер", "дзеффіреллі", "зефір",

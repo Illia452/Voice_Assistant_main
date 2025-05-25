@@ -10,10 +10,12 @@ class Work_NL():
         # Завантажуємо модель при умові якщо цього не зроблено(перший запуск програми з інтернетом)
         # stanza.download('uk') 
         # self.nlp = stanza.Pipeline('uk', processors='tokenize,mwt,pos,lemma')
-
+        print("Початок завантаження бібліотеки Stanza")
+        stanza_time = time.time()
 
         self.nlp = stanza.Pipeline('uk', processors='tokenize,mwt,pos,lemma', download_method=None)
 
+        print(f"Stanza запускалася {time.time()-stanza_time}")
         
         # download_method - забороняє автоматичне завантаження ресурсів під час виконання pipeline, тобто вмикається офлайн-режим
         # mwt - Multi-Word Token Expansion - обробляє багатослівні токени — слова, які складаються з кількох частин
