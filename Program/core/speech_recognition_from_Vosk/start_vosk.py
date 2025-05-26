@@ -5,15 +5,17 @@ import noisereduce as nr
 from pydub import AudioSegment
 import time
 import json
+from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal
 
 
 class SpeechRecognition():
     def __init__(self):
-        model = Model(r'..\models\speech_to_text\vosk-model-uk-v3') 
+        model = Model(r'..\..\models\speech_to_text\vosk-model-uk-v3')
         self.recognizer = KaldiRecognizer(model, 16000) # розпізнавач
         cap = pyaudio.PyAudio()
         self.stream = cap.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=2048)
         self.stream.start_stream()
+        self.detect_stop = False
 
 
     def delete_noise(self):
@@ -34,6 +36,9 @@ class SpeechRecognition():
         audio_np = np.array(self.str_audio.get_array_of_samples(), dtype=np.int16) # перетворення у numpy масив
         self.final_audio = audio_np.tobytes() # перетворення у байти
 
+    def find_word_stop(self):
+        if "сто" in self.text:
+            self.detect_stop = True
 
     def analyze_comand(self, res_key):
         if len(self.result[res_key]) == 0:
@@ -41,7 +46,8 @@ class SpeechRecognition():
         else:
             self.text = (self.result[res_key])
             print(self.text)
-
+            self.find_word_stop()
+ 
 
     def print_text(self):
         while True:
@@ -49,6 +55,9 @@ class SpeechRecognition():
             self.volume_up()
 
             if self.recognizer.AcceptWaveform(self.final_audio): 
+                if self.detect_stop == True:
+                    print("Зупинка програми")
+                    break
                 rec = self.recognizer.Result()
                 self.result = json.loads(rec)
                 self.analyze_comand("text")

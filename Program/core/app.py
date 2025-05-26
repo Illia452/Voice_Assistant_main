@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QLabel
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThread, QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QGraphicsDropShadowEffect
 from PyQt5.QtGui import QColor, QFont
 from PyQt5.QtGui import QPixmap
@@ -8,6 +8,8 @@ import sys
 
 
 class UI_MainWindow(QMainWindow):
+    Signal_ButtonMicrophone = pyqtSignal(bool)
+
     def __init__(self):
         super().__init__()
         self.setupUI()
@@ -132,6 +134,7 @@ class UI_MainWindow(QMainWindow):
         if self.status_buttonStartStop:
             self.switchON_ButtonStartStop()
             self.status_buttonStartStop = False
+
         else:
             self.switchOFF_ButtonStartStop()
             self.status_buttonStartStop = True
@@ -193,9 +196,9 @@ class UI_MainWindow(QMainWindow):
 
 
     def createButtonUseMicrophone(self):
-        self.button_microhpone = QtWidgets.QPushButton(self.centralwidget)
-        self.button_microhpone.setGeometry(QtCore.QRect(490, 310, 64, 64))
-        self.button_microhpone.setStyleSheet("""
+        self.button_microphone = QtWidgets.QPushButton(self.centralwidget)
+        self.button_microphone.setGeometry(QtCore.QRect(490, 310, 64, 64))
+        self.button_microphone.setStyleSheet("""
 			QPushButton {
 				background-color: #c084fc;
 				border-radius: 5px;
@@ -210,28 +213,31 @@ class UI_MainWindow(QMainWindow):
         shadow.setBlurRadius(15)  # Розмиття
         shadow.setOffset(0, 4)  # Зміщення тіні (по X та Y)
         shadow.setColor(QColor(0, 0, 0, 30))  # Колір тіні (чорний з прозорістю)
-        self.button_microhpone.setGraphicsEffect(shadow)
-        self.button_microhpone.setText("")
+        self.button_microphone.setGraphicsEffect(shadow)
+        self.button_microphone.setText("")
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("../image/icon/mic_on_regular_icon.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.button_microhpone.setIcon(icon)
-        self.button_microhpone.setIconSize(QtCore.QSize(22, 22))
-        self.button_microhpone.setObjectName("button_microphone")
-        self.button_microhpone.clicked.connect(self.clickButton_Microphone)
+        self.button_microphone.setIcon(icon)
+        self.button_microphone.setIconSize(QtCore.QSize(22, 22))
+        self.button_microphone.setObjectName("button_microphone")
+        self.button_microphone.clicked.connect(self.clickButton_Microphone)
         self.status_buttonMicrophone = False
-        self.clickButton_StartStop()
+        self.clickButton_Microphone()
 
     def clickButton_Microphone(self):
         if self.status_buttonMicrophone:
             self.switchON_ButtonMicrophone()
             self.status_buttonMicrophone = False
+            self.Signal_ButtonMicrophone.emit(self.status_buttonMicrophone)
+
         else:
             self.switchOFF_ButtonMicrophone()
             self.status_buttonMicrophone = True
+            self.Signal_ButtonMicrophone.emit(self.status_buttonMicrophone)
 
 
     def switchON_ButtonMicrophone(self):
-            self.button_microhpone.setStyleSheet("""
+            self.button_microphone.setStyleSheet("""
 			QPushButton {
 				background-color: #c084fc;
 				border-radius: 5px;
@@ -244,12 +250,12 @@ class UI_MainWindow(QMainWindow):
 	        """)
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap("../image/icon/mic_on_regular_icon.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-            self.button_microhpone.setIcon(icon)
-            self.button_microhpone.setIconSize(QtCore.QSize(22, 22))
+            self.button_microphone.setIcon(icon)
+            self.button_microphone.setIconSize(QtCore.QSize(22, 22))
 
 
     def switchOFF_ButtonMicrophone(self):
-        self.button_microhpone.setStyleSheet("""
+        self.button_microphone.setStyleSheet("""
         QPushButton {
             background-color: rgba(230, 160, 160, 0.9);
             border-radius: 5px;
@@ -261,8 +267,8 @@ class UI_MainWindow(QMainWindow):
         """)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("../image/icon/mic_off_regular_icon.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.button_microhpone.setIcon(icon)
-        self.button_microhpone.setIconSize(QtCore.QSize(22, 22))
+        self.button_microphone.setIcon(icon)
+        self.button_microphone.setIconSize(QtCore.QSize(22, 22))
 
 
     def createButtonSetting(self):
