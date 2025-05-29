@@ -8,7 +8,6 @@ import sys
 
 
 class UI_MainWindow(QMainWindow):
-    Signal_ButtonMicrophone = pyqtSignal(bool)
 
     def __init__(self):
         super().__init__()
@@ -228,12 +227,10 @@ class UI_MainWindow(QMainWindow):
         if self.status_buttonMicrophone:
             self.switchON_ButtonMicrophone()
             self.status_buttonMicrophone = False
-            self.Signal_ButtonMicrophone.emit(self.status_buttonMicrophone)
 
         else:
             self.switchOFF_ButtonMicrophone()
             self.status_buttonMicrophone = True
-            self.Signal_ButtonMicrophone.emit(self.status_buttonMicrophone)
 
 
     def switchON_ButtonMicrophone(self):

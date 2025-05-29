@@ -6,13 +6,18 @@ from pydub import AudioSegment
 import time
 import json
 from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal
+from speech_recognition_from_Vosk.work_with_streamText import Work_withTexts_FromVosk
 
 
-class SpeechRecognition():
+class SpeechRecognition_forKeyWord():
+    
+
     def __init__(self):
-        model = Model(r'..\..\models\speech_to_text\vosk-model-uk-v3')
+        self.work_withText = Work_withTexts_FromVosk()
+        model = Model(r'..\..\models\speech_to_text\vosk-model-small-en-us-0.15')
         self.recognizer = KaldiRecognizer(model, 16000) # розпізнавач
         cap = pyaudio.PyAudio()
+
         self.stream = cap.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=2048)
         self.stream.start_stream()
         self.detect_stop = False
@@ -36,39 +41,47 @@ class SpeechRecognition():
         audio_np = np.array(self.str_audio.get_array_of_samples(), dtype=np.int16) # перетворення у numpy масив
         self.final_audio = audio_np.tobytes() # перетворення у байти
 
-    def find_word_stop(self):
-        if "сто" in self.text:
-            self.detect_stop = True
 
     def analyze_comand(self, res_key):
         if len(self.result[res_key]) == 0:
+            self.text = ""
+            self.iStext = False
+            self.work_withText.whether_detectedKeyWord(self.text, self.iStext)
             return
         else:
             self.text = (self.result[res_key])
+            self.iStext = True
             print(self.text)
-            self.find_word_stop()
+            self.work_withText.whether_detectedKeyWord(self.text, self.iStext)
+
+
+  
+        
+
+
+
+    def speechToText_Vosk(self):
+        if self.recognizer.AcceptWaveform(self.final_audio): 
+            rec = self.recognizer.Result()
+            self.result = json.loads(rec)
+            self.analyze_comand("text")
+                                
+        else:
+            # постійне прослуховування аудіо з реальним виведенням
+            rec = self.recognizer.PartialResult()
+            self.result = json.loads(rec)
+            self.analyze_comand("partial")
  
 
     def print_text(self):
         while True:
             self.delete_noise()
             self.volume_up()
+            self.speechToText_Vosk()
 
-            if self.recognizer.AcceptWaveform(self.final_audio): 
-                if self.detect_stop == True:
-                    print("Зупинка програми")
-                    break
-                rec = self.recognizer.Result()
-                self.result = json.loads(rec)
-                self.analyze_comand("text")
-                                  
-            # else:
-            #     # постійне прослуховування аудіо з реальним виведенням
-            #     rec = self.recognizer.PartialResult()
-            #     self.result = json.loads(rec)
-            #     self.analyze_comand("partial")
+
 
 
 if __name__ == "__main__":
-    speech_recognition = SpeechRecognition()
+    speech_recognition = SpeechRecognition_forKeyWord()
     speech_recognition.print_text()

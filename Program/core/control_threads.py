@@ -1,6 +1,5 @@
-import threading
 from app import UI_MainWindow
-from speech_recognition_from_Vosk.start_vosk import SpeechRecognition
+from speech_recognition_from_Vosk.start_vosk import SpeechRecognition_forKeyWord
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QThread, QObject, pyqtSignal, pyqtSlot
@@ -12,12 +11,9 @@ class Vosk_Thread(QObject):
 
     @pyqtSlot() #показуємо Qt що функція run() буде результатом чогось
     def run(self):
-        sr = SpeechRecognition()
+        sr = SpeechRecognition_forKeyWord()
         sr.print_text()
         self.finished.emit()
-
-def Signall():
-    print("КНООПКА")
 
 
 if __name__ == "__main__":
@@ -26,19 +22,16 @@ if __name__ == "__main__":
     ui = UI_MainWindow()
     ui.show()
 
-    thread = QThread()
 
-    vosk_thread = Vosk_Thread()
-
-    vosk_thread.moveToThread(thread)
-
-    thread.started.connect(vosk_thread.run)
-    vosk_thread.finished.connect(thread.quit)
-    vosk_thread.finished.connect(vosk_thread.deleteLater)
-    thread.finished.connect(thread.deleteLater)
-    ui.Signal_ButtonMicrophone.connect(Signall)
-
-    thread.start()
+    thread_for_Vosk = QThread()
+    vosk_worker = Vosk_Thread()
+    vosk_worker.moveToThread(thread_for_Vosk)
+    thread_for_Vosk.started.connect(vosk_worker.run)
+    vosk_worker.finished.connect(thread_for_Vosk.quit)
+    vosk_worker.finished.connect(vosk_worker.deleteLater)
+    thread_for_Vosk.finished.connect(thread_for_Vosk.deleteLater)
+    thread_for_Vosk.start()
+    
 
     sys.exit(app.exec_())
 
