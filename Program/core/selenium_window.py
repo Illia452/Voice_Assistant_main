@@ -25,6 +25,8 @@ class WindowSelenium():
 
         self.driver = uc.Chrome(options=options)
 
+        self.selenium_running = True
+
     def delay_lvl1(self):
         time.sleep(random.uniform(2, 4))
 
@@ -47,12 +49,11 @@ class WindowSelenium():
         self.win = app.window(handle=hwnd).wrapper_object()
         self.win.set_focus()
 
-        self.delay_lvl2()
 
     
     def move_WindowOutsideDisplay(self):
         # Переміщаємо вікно за межі екрана 
-        self.win.move_window(x=0, y=0, width=1920, height=1080)
+        self.win.move_window(x=-1919, y=0, width=1920, height=1080)
 
         # Клікаємо по координатах
         # time.sleep(1)
@@ -141,6 +142,8 @@ class WindowSelenium():
         aria_pressed = self.voice_button.get_attribute("aria-pressed")
         print("aria-pressed =", aria_pressed)  # має вивести 'false' або 'true'
 
+    def stop_Selenium(self):
+        self.selenium_running = False
 
 
     def signInAccountGoogle(self):
@@ -163,8 +166,12 @@ class WindowSelenium():
             self.isElement()
             time.sleep(0.5)
 
+            if self.selenium_running == False:
+                self.driver.quit()
+                break
 
-    def start(self):
+
+    def startWindow(self):
         self.getting_HWMD()
         self.move_WindowOutsideDisplay()
         self.signInAccountGoogle()
@@ -175,11 +182,7 @@ class WindowSelenium():
         except OSError as e:
             print(f"Помилка з файлом: {e}")
             self.driver.quit()
-        except Exception as e:
-            print(f"Виникла помилка: {e}")
-        finally:
-            self.driver.quit()
 
 if __name__ == "__main__":
     window_selenium = WindowSelenium()
-    window_selenium.start()
+    window_selenium.startWindow()

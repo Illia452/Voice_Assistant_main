@@ -18,9 +18,11 @@ class SpeechRecognition_forKeyWord():
         self.recognizer = KaldiRecognizer(model, 16000) # розпізнавач
         cap = pyaudio.PyAudio()
 
+
         self.stream = cap.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=2048)
         self.stream.start_stream()
         self.detect_stop = False
+        self.vosk_running = True
 
 
     def delete_noise(self):
@@ -71,7 +73,11 @@ class SpeechRecognition_forKeyWord():
             rec = self.recognizer.PartialResult()
             self.result = json.loads(rec)
             self.analyze_comand("partial")
- 
+
+    
+    def stop_Vosk(self):
+        self.vosk_running = False
+
 
     def print_text(self):
         while True:
@@ -79,7 +85,8 @@ class SpeechRecognition_forKeyWord():
             self.volume_up()
             self.speechToText_Vosk()
 
-
+            if self.vosk_running == False:
+                break
 
 
 if __name__ == "__main__":
