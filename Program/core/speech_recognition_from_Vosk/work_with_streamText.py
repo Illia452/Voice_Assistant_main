@@ -31,11 +31,11 @@ class Work_withTexts_FromVosk():
     def waitSpeechAfterDetectedKW(self, iStext):
         self.time_that_passed = time.time() - self.time_detected_keyword
         print(f"ЧАС: {self.time_that_passed} ЧИ Є ТЕКСТ: {iStext}")
-        if 1.8 <= self.time_that_passed:
+        if 1.5 <= self.time_that_passed:
             if iStext:
-                print("КОМАНДА РОЗПІЗНАНА")
+
                 time.sleep(2)
-                self.iSdetect_key_word = False
+
                 #запускаємо мікро в докс
             elif iStext != True and 4.8 <= self.time_that_passed:
                 self.iSdetect_key_word = False

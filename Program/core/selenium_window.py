@@ -132,9 +132,15 @@ class WindowSelenium():
 
 
     def click_StartStop_VoiceWrite(self):
-        voice_button = self.driver.find_element(By.XPATH, '//*[@id="docs-palette-dictation"]/div[1]/div[3]/div[1]')
-        voice_button.click()
+        self.voice_button = self.driver.find_element(By.XPATH, '//*[@id="docs-palette-dictation"]/div[1]/div[3]/div[1]')
+        self.voice_button.click()
         self.delay_lvl2
+
+    def isElement(self):
+        
+        aria_pressed = self.voice_button.get_attribute("aria-pressed")
+        print("aria-pressed =", aria_pressed)  # має вивести 'false' або 'true'
+
 
 
     def signInAccountGoogle(self):
@@ -153,6 +159,9 @@ class WindowSelenium():
         self.click_Button_Instruments()
         self.click_Button_VoiceWrite()
         self.click_StartStop_VoiceWrite()
+        while True:
+            self.isElement()
+            time.sleep(0.5)
 
 
     def start(self):
@@ -162,9 +171,14 @@ class WindowSelenium():
         self.work_withGoogleDocs()
         
         try:
-            time.sleep(120)
-        except OSError:
-            pass
+            time.sleep(500)
+        except OSError as e:
+            print(f"Помилка з файлом: {e}")
+            self.driver.quit()
+        except Exception as e:
+            print(f"Виникла помилка: {e}")
+        finally:
+            self.driver.quit()
 
 if __name__ == "__main__":
     window_selenium = WindowSelenium()
