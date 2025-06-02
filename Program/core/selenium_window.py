@@ -12,6 +12,7 @@ from pywinauto import Application
 import pygetwindow as gw
 
 
+
 class WindowSelenium():
 
     def __init__(self):
@@ -111,7 +112,13 @@ class WindowSelenium():
 
         next_after_password = self.driver.find_element(By.ID, 'passwordNext')
         next_after_password.click()
-        self.delay_lvl2()
+        self.delay_lvl1()
+        x, y = pyautogui.position()
+        print(f"Поточні координати миші: X={x}, Y={y}")
+        pyautogui.click(x=6, y=506)
+
+        pyautogui.moveTo(x, y)
+ 
 
 
     def openGoogleDocs(self):
@@ -143,7 +150,7 @@ class WindowSelenium():
         print("aria-pressed =", aria_pressed)  # має вивести 'false' або 'true'
 
     def stop_Selenium(self):
-        self.selenium_running = False
+        self.driver.quit()
 
 
     def signInAccountGoogle(self):
@@ -166,9 +173,6 @@ class WindowSelenium():
             self.isElement()
             time.sleep(0.5)
 
-            if self.selenium_running == False:
-                self.driver.quit()
-                break
 
 
     def startWindow(self):

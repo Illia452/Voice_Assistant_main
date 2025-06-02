@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Push Notification</title>
+  <style>
+    body {
+      background: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    .push-container {
+      display: flex;
+      align-items: center;
+      background: linear-gradient(180deg, #E9D5FF, #F7F0FF);
+      border: 2px solid #A855F7;
+      border-radius: 16px;
+      padding: 12px 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      animation: fadeIn 0.6s ease-out;
+      max-width: 320px;
+    }
+
+    .push-icon {
+      width: 40px;
+      height: 40px;
+      margin-right: 12px;
+    }
+
+    .push-text {
+      flex-grow: 1;
+      font-size: 16px;
+      font-weight: 500;
+      color: #3B0764;
+    }
+
+    .push-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .push-buttons button {
+      background-color: transparent;
+      border: 2px solid #D8B4FE;
+      border-radius: 8px;
+      font-size: 18px;
+      padding: 4px 8px;
+      cursor: pointer;
+      color: #3B0764;
+      transition: background-color 0.2s ease;
+    }
+
+    .push-buttons button:hover {
+      background-color: #EDE9FE;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="push-container">
+  <img src="https://em-content.zobj.net/thumbs/160/apple/354/cotton-candy_1f36c.png" alt="icon" class="push-icon" />
+  <div class="push-text">Слухаю...</div>
+  <div class="push-buttons">
+    <button title="Додати">➕</button>
+    <button title="Мікрофон">🎤</button>
+  </div>
+</div>
+
+</body>
+</html>
+

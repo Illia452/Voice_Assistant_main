@@ -1,8 +1,14 @@
 import time
+from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
 
-class Work_withTexts_FromVosk():
+class Work_withTexts_FromVosk(QObject):
+
+    start_Push = pyqtSignal()
+    close_Push = pyqtSignal()
+    google_docs_text_available = pyqtSignal(str)
 
     def __init__(self):
+        super().__init__()
         self.uk_list_key_words = ["заір","зельфія","опір", "зір зефір", "зір зоря", "зегер", "дзеффіреллі",
         "зефір","захід", "з ефір", "ефір", "земфіра", "засіяти", "захир", "захір", "за часів","часів",
         "за шию", "зефірс", "захер", "захур", "заньєр", "за кар'єру", "звір", "зір", "жахів", "вже ефір",
@@ -16,6 +22,16 @@ class Work_withTexts_FromVosk():
         "the therefore", "the food", "as i fea", "the share", "they feel", "the feel"]
         self.time_detected_keyword = 0
         self.iSdetect_key_word = False
+        self.pushIS_Active = False
+
+
+    def check_whether_detectedKW(self, text):
+        if self.iSdetect_key_word:
+            self.startPushWindow_GetText()
+        else:
+            self.find_keyWord(text)
+
+    
 
     def find_keyWord(self, text_from_streamVosk):
         for key_word in self.en_list_key_words:
@@ -28,21 +44,40 @@ class Work_withTexts_FromVosk():
         self.time_detected_keyword = time.time()
         print("КЛЮЧОВЕ СЛОВО РОЗПІЗНАНО")
 
-    def waitSpeechAfterDetectedKW(self, iStext):
-        self.time_that_passed = time.time() - self.time_detected_keyword
-        print(f"ЧАС: {self.time_that_passed} ЧИ Є ТЕКСТ: {iStext}")
-        if 1.5 <= self.time_that_passed:
-            if iStext:
 
-                time.sleep(2)
+    def startPushWindow_GetText(self):
+        if self.pushIS_Active == False:
+            self.pushIS_Active = True
+            time.sleep(1)
+            self.start_Push.emit()
+            self.time_open_push = time.time()
+            time.sleep(0.1)
 
-                #запускаємо мікро в докс
-            elif iStext != True and 4.8 <= self.time_that_passed:
-                self.iSdetect_key_word = False
-                print("ЧАС ОЧІКУВАННЯ МИНУВ")
+    
+    def wait_signal_for_close_push(self):
+        while True:
+            if self.pushIS_Active == False:
+                self.close_Push.emit()
 
-    def whether_detectedKeyWord(self, text, iStext):
-        if self.iSdetect_key_word:
-            self.waitSpeechAfterDetectedKW(iStext)
-        else:
-            self.find_keyWord(text)
+
+    
+            
+            
+    
+    @pyqtSlot(str) # Декоратор, що вказує, що це слот, який приймає рядок
+    def receive_google_docs_text(self, text_content):
+        self.google_docs_text_available.emit(text_content)
+
+
+    # def waitSpeechAfterDetectedKW(self, iStext):
+    #     self.time_that_passed = time.time() - self.time_detected_keyword
+    #     print(f"ЧАС: {self.time_that_passed} ЧИ Є ТЕКСТ: {iStext}")
+    #     if 1.5 <= self.time_that_passed:
+    #         if iStext:
+
+    #             time.sleep(2)
+
+    #             #запускаємо мікро в докс
+    #         elif iStext != True and 4.8 <= self.time_that_passed:
+    #             self.iSdetect_key_word = False
+    #             print("ЧАС ОЧІКУВАННЯ МИНУВ")

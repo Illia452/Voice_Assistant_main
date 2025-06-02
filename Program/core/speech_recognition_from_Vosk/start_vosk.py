@@ -9,11 +9,10 @@ from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal
 from speech_recognition_from_Vosk.work_with_streamText import Work_withTexts_FromVosk
 
 
-class SpeechRecognition_forKeyWord():
+class SpeechRecognition_forKeyWord(QObject):
     
 
-    def __init__(self):
-        self.work_withText = Work_withTexts_FromVosk()
+    def __init__(self, work_with_text):
         model = Model(r'..\..\models\speech_to_text\vosk-model-small-en-us-0.15')
         self.recognizer = KaldiRecognizer(model, 16000) # розпізнавач
         cap = pyaudio.PyAudio()
@@ -23,6 +22,7 @@ class SpeechRecognition_forKeyWord():
         self.stream.start_stream()
         self.detect_stop = False
         self.vosk_running = True
+        self.work_withText = work_with_text
 
 
     def delete_noise(self):
@@ -48,17 +48,13 @@ class SpeechRecognition_forKeyWord():
         if len(self.result[res_key]) == 0:
             self.text = ""
             self.iStext = False
-            self.work_withText.whether_detectedKeyWord(self.text, self.iStext)
+            self.work_withText.check_whether_detectedKW(self.text)
             return
         else:
             self.text = (self.result[res_key])
             self.iStext = True
             print(self.text)
-            self.work_withText.whether_detectedKeyWord(self.text, self.iStext)
-
-
-  
-        
+            self.work_withText.check_whether_detectedKW(self.text)
 
 
 
