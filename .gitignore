@@ -1,2 +1,4 @@
 /models/
 /rozpiznavanya/secret_data/
+/Program/core/__pycache__/
+/Program/core/speech_recognition_from_Vosk/
