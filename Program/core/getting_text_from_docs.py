@@ -7,7 +7,7 @@ class GetTextfromGoogleDocs(QObject):
 
     close_push = pyqtSignal()
 
-    def __init__(self, work_with_text):
+    def __init__(self, control_signals):
         super().__init__()
         SCOPES = ['https://www.googleapis.com/auth/documents']
         SERVICE_ACCOUNT_FILE = '../../rozpiznavanya/secret_data/gogAPI.json' 
@@ -15,11 +15,14 @@ class GetTextfromGoogleDocs(QObject):
             SERVICE_ACCOUNT_FILE, scopes=SCOPES)
         self.service = build('docs', 'v1', credentials=creds)
         self.DOCUMENT_ID = '1jxQs9DNNV9gKY_9NvsixZlcqe_Sc-LZKlTwWkp8kYbI'
-        self.work_WithText = work_with_text
-
-        self.time_open_push = 0
+        self.control_signals = control_signals
+        self.push_running = False
+        self.isText = False
 
         self.get_text_running = True
+
+        control_signals.start_writeText.connect(self.status_Push_ON)
+        control_signals.stop_writeText.connect(self.status_Push_OFF)
 
     # витягуємо текст
     def extract_text(self, elements):
@@ -39,54 +42,55 @@ class GetTextfromGoogleDocs(QObject):
         self.text = self.extract_text(content)
         time.sleep(0.5)
 
-        self.set_text()
+    
+    def clear_text(self):
+        if len(self.text) == 1:
+            return
+        else:
+            requests = [
+                {
+                    'deleteContentRange': {
+                        'range': {
+                            'startIndex': 1,
+                            'endIndex': self.end_index - 1
+                        }
+
+                    }
+
+                },
+            ]
+            result = self.service.documents().batchUpdate(
+                documentId=self.DOCUMENT_ID, body={'requests': requests}).execute()
 
     def stop_GetText(self):
         self.get_text_running = False
 
 
-    def set_text(self):
-        if self.work_WithText.pushIS_Active:
-            self.work_WithText.receive_google_docs_text(self.text)
-            self.wait_speech()
-
-    def wait_speech(self):
-        self.time_open_push = time.time()
-        print(f"ЦЕ ДОВЖИНА НАШОГО ТЕКСТУ: {len(self.text)}")
-        if time.time() - self.time_open_push >= 4.8 and len(self.text) == 1:
-            self.work_WithText.pushIS_Active = False
-            self.close_push.emit()
-            print("СИГНАЛ ЩО ПУШ ЗАКРИВАЄМО")
-            
-
-
     def start(self):
         self.print_text()
-        
+        self.clear_text()
         while True:
-            self.print_text()
+            if self.push_running:
+                self.print_text()
+                self.wait_text()
             if self.get_text_running == False:
                 break
-
     
-    def clear_text(self):
-        requests = [
-            {
-                'deleteContentRange': {
-                    'range': {
-                        'startIndex': 1,
-                        'endIndex': self.end_index - 1
-                    }
+    def wait_text(self):
+        if self.isText:
+            self.control_signals.transfer_text_toPush(self.text)
 
-                }
+    def chech_whether_isText(self):
+        if len(self.text) > 1:
+            self.isText = True
 
-            },
-        ]
-        result = self.service.documents().batchUpdate(
-            documentId=self.DOCUMENT_ID, body={'requests': requests}).execute()
+    @pyqtSlot()
+    def status_Push_ON(self):
+        self.push_running = True
 
-
-    
+    @pyqtSlot()
+    def status_Push_OFF(self):
+        self.push_running = False
 
 if __name__ == "__main__":
     get_text_docs = GetTextfromGoogleDocs()

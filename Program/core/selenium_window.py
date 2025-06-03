@@ -10,12 +10,14 @@ import pyautogui
 import win32gui
 from pywinauto import Application
 import pygetwindow as gw
+from PyQt5.QtCore import QObject
 
 
 
-class WindowSelenium():
+class WindowSelenium(QObject):
 
-    def __init__(self):
+    def __init__(self, control_signals):
+        super().__init__()
         load_dotenv("../../rozpiznavanya/secret_data/inf.env")
         self.unique_title = "MySupereWindow_12345"
         options = uc.ChromeOptions()
@@ -27,6 +29,8 @@ class WindowSelenium():
         self.driver = uc.Chrome(options=options)
 
         self.selenium_running = True
+
+        self.control_signals = control_signals
 
     def delay_lvl1(self):
         time.sleep(random.uniform(2, 4))

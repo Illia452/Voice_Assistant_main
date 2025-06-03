@@ -12,7 +12,7 @@ from speech_recognition_from_Vosk.work_with_streamText import Work_withTexts_Fro
 class SpeechRecognition_forKeyWord(QObject):
     
 
-    def __init__(self, work_with_text):
+    def __init__(self, control_signals, work_with_text):
         model = Model(r'..\..\models\speech_to_text\vosk-model-small-en-us-0.15')
         self.recognizer = KaldiRecognizer(model, 16000) # розпізнавач
         cap = pyaudio.PyAudio()
@@ -22,19 +22,20 @@ class SpeechRecognition_forKeyWord(QObject):
         self.stream.start_stream()
         self.detect_stop = False
         self.vosk_running = True
+        self.control_signals = control_signals
         self.work_withText = work_with_text
 
 
     def delete_noise(self):
         data = self.stream.read(4096) 
-        masiv = np.frombuffer(data, dtype=np.int16) # Перетворення байтових даних в масив
-        audio_without_noise = nr.reduce_noise(y=masiv, sr=16000) # Зняття шуму з аудіопотоку
-        self.bytes_audio = audio_without_noise.astype(np.int16).tobytes() # Конвертація масиву в байти
+        self.masiv = np.frombuffer(data, dtype=np.int16) # Перетворення байтових даних в масив
+        # audio_without_noise = nr.reduce_noise(y=masiv, sr=16000) # Зняття шуму з аудіопотоку
+        # self.bytes_audio = audio_without_noise.astype(np.int16).tobytes() # Конвертація масиву в байти
 
 
     def volume_up(self):
         audio_segment = AudioSegment(
-        data=self.bytes_audio,
+        data=self.masiv,
         sample_width=2,    # 16 бітний формат (= 2 байти)
         frame_rate=16000,   
         channels=1         
@@ -47,12 +48,10 @@ class SpeechRecognition_forKeyWord(QObject):
     def analyze_comand(self, res_key):
         if len(self.result[res_key]) == 0:
             self.text = ""
-            self.iStext = False
             self.work_withText.check_whether_detectedKW(self.text)
             return
         else:
             self.text = (self.result[res_key])
-            self.iStext = True
             print(self.text)
             self.work_withText.check_whether_detectedKW(self.text)
 
@@ -80,6 +79,7 @@ class SpeechRecognition_forKeyWord(QObject):
             self.delete_noise()
             self.volume_up()
             self.speechToText_Vosk()
+            time.sleep(0.05)
 
             if self.vosk_running == False:
                 break

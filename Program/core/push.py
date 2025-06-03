@@ -6,10 +6,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class PushWindow(QWidget):
-    def __init__(self, vosk_worker): 
+    def __init__(self): 
         super().__init__()
 
-        self.vosk_worker = vosk_worker
 
 
 
@@ -176,8 +175,8 @@ class PushWindow(QWidget):
 
     @QtCore.pyqtSlot(str)
     def print_text(self, text):
-        print(text)
-        self.inputField.setText(text)
+        speech = text
+        self.inputField.setText(speech)
 
 
 
