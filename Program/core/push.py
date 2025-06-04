@@ -125,6 +125,40 @@ class PushWindow(QWidget):
         self.button_micro.clicked.connect(self.clickButton_Micro)
         self.button_micro.show()
 
+    def listen_command_ON(self):
+        self.button_micro.setGeometry(QtCore.QRect(15, 140, 45, 45))
+        self.button_micro.setStyleSheet("""
+			QPushButton {
+				background-color: #D8B4FE;
+                border-radius: 20px;
+                border: 3px solid #A855F7;
+			}
+		""")
+        self.container.setStyleSheet("""
+            #container {
+                background: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0,
+                                            stop:0 #F3E8FF, stop:1 #D8B4FE);
+                border-radius: 20px;
+                border: 5px solid #A855F7;
+            }
+        """)
+
+    def listen_command_OFF(self):
+        self.button_micro.setGeometry(QtCore.QRect(20, 140, 40, 40))
+        self.button_micro.setStyleSheet("""
+			QPushButton {
+				background-color: transparent;
+			}
+		""")
+        self.container.setStyleSheet("""
+            #container {
+                background: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0,
+                                            stop:0 #F3E8FF, stop:1 #D8B4FE);
+                border-radius: 20px;
+                border: 2px solid #A855F7;
+            }
+        """)
+
 
     def clickButton_Micro(self):
         pass
@@ -176,26 +210,23 @@ class PushWindow(QWidget):
 
     @QtCore.pyqtSlot(str)
     def print_text(self, text):
-        print(text)
-        self.inputField.setText(text)
+
+        speech = text
+        self.inputField.setText(speech)
 
 
 
     def checkIfScrollNeeded(self):
         text_height = self.inputField.document().size().height() + 2
-        print(f"214: text_height: {text_height}")
         present_widget_height = self.inputField.viewport().height()
-        print(f"216: present_widget_height: {present_widget_height}")
 
         if text_height > present_widget_height and present_widget_height < 131:
-            print("РЯДОК 220")
             self.static_yPosition -= 30
             self.static_ySize += 30
             self.set_yPosition_ySize_input_field(self.static_yPosition, self.static_ySize)
             print("Текст не вміщується — з'явився скрол!")
 
         elif text_height < present_widget_height:
-            print("РЯДОК 228")
             self.static_yPosition += 30
             self.static_ySize -= 30
             self.set_yPosition_ySize_input_field(self.static_yPosition, self.static_ySize)

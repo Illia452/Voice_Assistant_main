@@ -42,6 +42,7 @@ class SpeechRecognition_forKeyWord(QObject):
         self.str_audio = audio_segment + 10 # підвищення гучності на 10 дец
         audio_np = np.array(self.str_audio.get_array_of_samples(), dtype=np.int16) # перетворення у numpy масив
         self.final_audio = audio_np.tobytes() # перетворення у байти
+        self.work_withText.get_data_about_audio(self.str_audio)
 
 
     def analyze_comand(self, res_key):

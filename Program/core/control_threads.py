@@ -31,12 +31,13 @@ class Selenium_Window_Thread(QObject):
 
     finished = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, work_with_text):
         super().__init__()
+        self.work_with_text = work_with_text
 
     @pyqtSlot()
     def run(self):
-        self.ws = WindowSelenium()
+        self.ws = WindowSelenium(self.work_with_text)
         self.ws.startWindow()
         self.finished.emit()
 
@@ -86,7 +87,7 @@ if __name__ == "__main__":
 
 
     thread_for_Selenium = QThread()
-    selenium_worker = Selenium_Window_Thread()
+    selenium_worker = Selenium_Window_Thread(work_with_text)
     selenium_worker.moveToThread(thread_for_Selenium)
     thread_for_Selenium.started.connect(selenium_worker.run)
     selenium_worker.finished.connect(thread_for_Selenium.quit)
@@ -119,6 +120,8 @@ if __name__ == "__main__":
     # work_with_text.start_print_textInPush.connect(get_text_worker.active_push)
     work_with_text.google_docs_text_available.connect(push_window.print_text)
     work_with_text.close_Push.connect(push_window.animate_hide_push)
+    work_with_text.stop_listen.connect(push_window.listen_command_OFF)
+    work_with_text.start_listen.connect(push_window.listen_command_ON)
 
 
 

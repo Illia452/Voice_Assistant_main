@@ -21,6 +21,8 @@ class GetTextfromGoogleDocs(QObject):
 
         self.get_text_running = True
 
+        self.start_rec_command = False
+
     # витягуємо текст
     def extract_text(self, elements):
         text = ''
@@ -45,46 +47,93 @@ class GetTextfromGoogleDocs(QObject):
         self.get_text_running = False
 
 
-    def set_text(self):
-        if self.work_WithText.pushIS_Active:
-            self.work_WithText.receive_google_docs_text(self.text)
-            self.wait_speech()
+    def clear_text(self):
+        if len(self.text) == 1:
+            return
+        else:
+            requests = [
+                {
+                    'deleteContentRange': {
+                        'range': {
+                            'startIndex': 1,
+                            'endIndex': self.end_index - 1
+                        }
 
-    def wait_speech(self):
-        self.time_open_push = time.time()
-        print(f"ЦЕ ДОВЖИНА НАШОГО ТЕКСТУ: {len(self.text)}")
-        if time.time() - self.time_open_push >= 4.8 and len(self.text) == 1:
-            self.work_WithText.pushIS_Active = False
-            self.close_push.emit()
-            print("СИГНАЛ ЩО ПУШ ЗАКРИВАЄМО")
+                    }
+
+                },
+            ]
+            result = self.service.documents().batchUpdate(
+                documentId=self.DOCUMENT_ID, body={'requests': requests}).execute()
+            
+
+    def set_text(self):
+        if self.work_WithText.start_write_text:
+            self.chech_whether_isText()
+        elif self.work_WithText.find_silence == True:
+            print("НАДСИЛАННЯ КОМАНДИ")
+            self.work_WithText.send_command(self.text)
+            self.work_WithText.status_find_silence_OFF()
+            self.start_rec_command = False
+            self.clear_text()
             
 
 
+    def chech_whether_isText(self):
+        print(f"ТИША ============ {self.work_WithText.find_silence}")
+
+        if self.start_rec_command == True:
+            self.work_WithText.receive_google_docs_text(self.text)
+        elif self.work_WithText.time_wait_passed == True:
+            self.work_WithText.steps_if_time_passed()
+            self.start_rec_command = False
+            self.clear_text()
+        elif len(self.text) > 1:
+            self.start_rec_command = True
+            self.work_WithText.status_text_ON()
+            self.work_WithText.receive_google_docs_text(self.text)
+
+
+
+
     def start(self):
+
         self.print_text()
-        
+        self.clear_text()
         while True:
             self.print_text()
             if self.get_text_running == False:
                 break
 
     
-    def clear_text(self):
-        requests = [
-            {
-                'deleteContentRange': {
-                    'range': {
-                        'startIndex': 1,
-                        'endIndex': self.end_index - 1
-                    }
 
-                }
+    
 
-            },
-        ]
-        result = self.service.documents().batchUpdate(
-            documentId=self.DOCUMENT_ID, body={'requests': requests}).execute()
 
+
+
+
+    # def start(self):
+    #     self.print_text()
+    #     self.clear_text()
+    #     while True:
+    #         if self.push_running:
+    #             self.print_text()
+    #             self.wait_text()
+    #         if self.get_text_running == False:
+    #             break
+    
+
+
+
+
+    # @pyqtSlot()
+    # def status_Push_ON(self):
+    #     self.push_running = True
+
+    # @pyqtSlot()
+    # def status_Push_OFF(self):
+    #     self.push_running = False
 
     
 

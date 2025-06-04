@@ -15,7 +15,7 @@ import pygetwindow as gw
 
 class WindowSelenium():
 
-    def __init__(self):
+    def __init__(self, work_with_text):
         load_dotenv("../../rozpiznavanya/secret_data/inf.env")
         self.unique_title = "MySupereWindow_12345"
         options = uc.ChromeOptions()
@@ -25,6 +25,7 @@ class WindowSelenium():
         options.add_argument("--use-fake-device-for-media-stream")
 
         self.driver = uc.Chrome(options=options)
+        self.work_with_text = work_with_text
 
         self.selenium_running = True
 
@@ -139,19 +140,54 @@ class WindowSelenium():
         self.delay_lvl1()
 
 
-    def click_StartStop_VoiceWrite(self):
-        self.voice_button = self.driver.find_element(By.XPATH, '//*[@id="docs-palette-dictation"]/div[1]/div[3]/div[1]')
-        self.voice_button.click()
-        self.delay_lvl2
+    def click_Start_VoiceWrite(self):
+        self.voice_button_start = self.driver.find_element(By.XPATH, '//*[@id="docs-palette-dictation"]/div[1]/div[3]/div[1]')
+        self.voice_button_start.click()
+
+    def click_Stop_VoiceWrite(self):
+        self.voice_button_stop = self.driver.find_element(By.CLASS_NAME, "docs-mic-control.docs-mic-control-recording")
+        self.voice_button_stop.click()
 
     def isElement(self):
-        
-        aria_pressed = self.voice_button.get_attribute("aria-pressed")
-        print("aria-pressed =", aria_pressed)  # має вивести 'false' або 'true'
+        aria_pressed = self.voice_button_start.get_attribute("aria-pressed")
+        print("aria-pressed =", aria_pressed) 
 
+
+    def on_off_buttonMicrophone(self):
+        self.find_buttob_micro = self.driver.find_element(By.CLASS_NAME, "docs-palette.docs-mic-palette")
+        self.status_micro = self.find_buttob_micro.is_displayed()
+        print(self.status_micro)
+        if self.status_micro:
+            print("МІКРО У ДОКС ВИМКНЕНО")
+        else:
+            print("МІКРО У ДОКС ВКЛЮЧЕНО")
+
+
+    def check_whether_ON_micro(self):
+        if self.status_micro == True:
+            self.click_Start_VoiceWrite()
+
+    def check_whether_OFF_micro(self):
+        if self.status_micro != True:
+            self.click_Stop_VoiceWrite()
+
+    
+
+    def check_whether_need_micro(self):
+        if self.work_with_text.start_write_text:
+            self.on_off_buttonMicrophone()
+            time.sleep(0.5)
+            self.check_whether_ON_micro()
+        else:
+            self.on_off_buttonMicrophone()
+            time.sleep(0.5)
+            self.check_whether_OFF_micro()
+                
+
+
+    
     def stop_Selenium(self):
         self.driver.quit()
-
 
     def signInAccountGoogle(self):
 
@@ -168,9 +204,8 @@ class WindowSelenium():
         self.openGoogleDocs()
         self.click_Button_Instruments()
         self.click_Button_VoiceWrite()
-        self.click_StartStop_VoiceWrite()
         while True:
-            self.isElement()
+            self.check_whether_need_micro()
             time.sleep(0.5)
 
 
